@@ -47,10 +47,11 @@ message MessageContext {
  * or HTTPResponseMessage. Contains headers, query parameters, and message
  * content. */
 message Message {
-  map<string, Headers> headers_map = 1;
-  string content = 2;
-  repeated string query_param_names = 3;
-  map<string, QueryParameters> query_param_map = 4;
+  repeated string header_names = 1;
+  map<string, Headers> headers_map = 2;
+  string content = 3;
+  repeated string query_param_names = 4;
+  map<string, QueryParameters> query_param_map = 5;
 
   /* List of header strings. */
   message Headers {
