@@ -16,103 +16,93 @@ syntax = "proto3";
 
 package apigee;
 
+import "google/protobuf/any.proto";
+
 option java_package = "com.google.apigee";
 
 /* CalloutContext holds both the MessageContext and ExecutionContext objects
  * for a java callout. */
-message CalloutContext {
+message Execution {
   MessageContext messageContext = 1;
   ExecutionContext executionContext = 2;
 }
 
 /* MessageContext holds the request, response and error Messages along with a
- * variable map and a mapping of identifier strings to FlowInfo objects. */
+ * flow variable map and a mapping of identifier strings to FlowInfos. */
 message MessageContext {
   Message request_message = 1;
   Message response_message = 2;
   Message error_message = 3;
-  map<string, string> variables = 5;
-  map<string, FlowInfo> flow_info_map = 6;
-
-  /* A representation of a Message containing headers, query parameters,
-   * content and a TransportMessage object. */
-  message Message {
-    map<string, string> header_map = 1;
-    repeated string headers = 2;
-    string content = 3;
-    repeated string query_param_names = 4;
-    map<string, string> query_param_map = 5;
-    repeated string query_params = 6;
-    TransportMessage transport_message = 7;
-
-    /* TransportMessage containing headers, properties, message content
-     * and the contentType. */
-    message TransportMessage {
-      string transport_id = 1;
-      map<string, string> property = 2;
-      repeated string header_names = 3;
-      map<string, string> header_map = 4;
-      repeated string headers = 5;
-      string content = 6;
-      MediaType contentType = 7;
-
-      /* An object representing an abstraction for a media type.
-      * Has the type, subtype and a parameter map. */
-      message MediaType {
-        string type = 1;
-        string subtype = 2;
-        map<string, string> parameters = 3;
-      }
-    }
-  }
+  map<string, string> flow_variables = 4; // flow variables mapping which refers to values within the MessageContext
+  map<string, FlowInfo> flow_info_map = 5; // mapping of string identifiers to FlowInfo objects
 
   /* Represents any object associated with a flow. */
   message FlowInfo {
     string identifier = 1;
-    map<string, string> map = 2;
+    map<string, google.protobuf.Any> map = 2;
+  }
+}
+
+/* A representation of a Message that wraps around a TransportMessage object
+ * containing headers, query parameters and message content. */
+message Message {
+  map<string, string> header_map = 1;
+  repeated string headers = 2;
+  string content = 3;
+  repeated string query_param_names = 4;
+  map<string, string> query_param_map = 5;
+  repeated string query_params = 6;
+  TransportMessage transport_message = 7;
+
+  /* TransportMessage containing headers, properties, content and the content
+   * type. Abstraction of a HTTPRequestMessage or HTTPResponseMessage. */
+  message TransportMessage {
+    string transport_id = 1;
+    map<string, string> property = 2;
+    repeated string header_names = 3;
+    map<string, string> header_map = 4;
+    repeated string headers = 5;
+    string content = 6;
+    MediaType contentType = 7;
+
+    /* An object representing an abstraction for a media type.
+    * Has the type, subtype and a parameter map. */
+    message MediaType {
+      string type = 1;
+      string subtype = 2;
+      map<string, string> parameters = 3;
+    }
   }
 }
 
 /* Object allowing access to proxy execution context. */
 message ExecutionContext {
-  bool is_request_flow = 1;
-  bool is_error_flow = 2;
-  repeated Fault faults = 3;
-  Fault fault = 4;
+  FlowType flow_type = 1; // https://docs.apigee.com/api-platform/fundamentals/what-are-flows
+  repeated Fault faults = 2;
+  Fault fault = 3;
 
-  /* Describes an exception occuring within the flow. */
+  /* Indicates whether the execution is a request or error flow. */
+  enum FlowType {
+    UNKNOWN_FLOW_TYPE = 0;
+    REQUEST = 1;
+    ERROR = 2;
+  }
+
+  /* Describes an exception occurring within the flow. */
   message Fault {
     Category category = 1;
     string sub_category = 2;
     string name = 3;
     string reason = 4;
-    Throwable exception = 5;
-    map<string, string> attributes = 6;
+    map<string, string> attributes = 5;
 
     /* Enumerator for category of the Fault. */
     enum Category {
-      Messaging = 0;
-      Step = 1;
-      Transport = 2;
-      System = 3;
-    }
-
-    /* Represents errors and exceptions in Java. */
-    message Throwable {
-      string message = 1;
-      Throwable cause = 2;
-      repeated StackTraceElement stack_trace = 3;
-
-      /* Represents a single stack frame. */
-      message StackTraceElement {
-        string class_loader_name = 1;
-        string module_name = 2;
-        string module_version = 3;
-        string declaring_class = 4;
-        string method_name = 5;
-        string file_name = 6;
-        int32 line_number = 7;
-      }
+      UNKNOWN_CATEGORY = 0;
+      MESSAGING = 1;
+      STEP = 2;
+      TRANSPORT = 3;
+      SYSTEM = 4;
     }
   }
 }
