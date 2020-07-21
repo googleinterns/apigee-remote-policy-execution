@@ -43,35 +43,23 @@ message MessageContext {
   }
 }
 
-/* A representation of a Message that wraps around a TransportMessage object
- * containing headers, query parameters and message content. */
+/* Representation of a Message that is an abstraction of an HTTPRequestMessage
+ * or HTTPResponseMessage. Contains headers, query parameters, and message
+ * content. */
 message Message {
-  map<string, string> header_map = 1;
-  repeated string headers = 2;
-  string content = 3;
-  repeated string query_param_names = 4;
-  map<string, string> query_param_map = 5;
-  repeated string query_params = 6;
-  TransportMessage transport_message = 7;
+  map<string, Headers> headers_map = 1;
+  string content = 2;
+  repeated string query_param_names = 3;
+  map<string, QueryParameters> query_param_map = 4;
 
-  /* TransportMessage containing headers, properties, content and the content
-   * type. Abstraction of a HTTPRequestMessage or HTTPResponseMessage. */
-  message TransportMessage {
-    string transport_id = 1;
-    map<string, string> property = 2;
-    repeated string header_names = 3;
-    map<string, string> header_map = 4;
-    repeated string headers = 5;
-    string content = 6;
-    MediaType contentType = 7;
+  /* List of header strings. */
+  message Headers {
+    repeated string header = 1;
+  }
 
-    /* An object representing an abstraction for a media type.
-    * Has the type, subtype and a parameter map. */
-    message MediaType {
-      string type = 1;
-      string subtype = 2;
-      map<string, string> parameters = 3;
-    }
+  /* List of query parameters. */
+  message QueryParameters {
+    repeated string query_parameter = 1;
   }
 }
 
