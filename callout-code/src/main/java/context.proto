@@ -18,7 +18,7 @@ import "google/protobuf/any.proto";
 
 option java_package = "com.google.apigee";
 
-// Context holds both the MessageContext and ExecutionContext objects
+// Execution holds both the MessageContext and ExecutionContext objects
 // used for java callouts and policy execution.
 message Execution {
   MessageContext messageContext = 1;
@@ -32,10 +32,8 @@ message MessageContext {
   Message request_message = 1;
   Message response_message = 2;
   Message error_message = 3;
-  // flow variables mapping which refers to values within the MessageContext
-  map<string, string> flow_variables = 4;
   // mapping of unique string identifiers to FlowInfo objects. map key is same as FlowInfo.identifier
-  map<string, FlowInfo> flow_info_map = 5;
+  map<string, FlowInfo> flow_info_map = 4;
 }
 
 // Representation of a Message that is an abstraction of an HTTP Request
@@ -45,6 +43,8 @@ message Message {
   map<string, Headers> header_map = 1;
   google.protobuf.Any content = 2;
   map<string, QueryParameters> query_param_map = 3;
+  // map of flow variables that refer to values within a context
+  map<string, string> flow_variables = 4;
 
   // List of header strings.
   message Headers {
