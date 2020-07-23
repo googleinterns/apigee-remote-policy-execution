@@ -32,8 +32,6 @@ message MessageContext {
   Message request_message = 1;
   Message response_message = 2;
   Message error_message = 3;
-  // mapping of unique string identifiers to FlowInfo objects. map key is same as FlowInfo.identifier
-  map<string, FlowInfo> flow_info_map = 4;
 }
 
 // Representation of a Message that is an abstraction of an HTTP Request
@@ -41,10 +39,19 @@ message MessageContext {
 // content.
 message Message {
   map<string, Headers> header_map = 1;
-  google.protobuf.Any content = 2;
+  bytes content = 2;
   map<string, QueryParameters> query_param_map = 3;
-  // map of flow variables that refer to values within a context
-  map<string, string> flow_variables = 4;
+  // map of flow variables that refer to values within a context or
+  // map of unique string identifiers to FlowInfo objects. map key is same as FlowInfo.identifier
+  map<string, FlowMapValue> flow_variables = 4;
+
+  // Possible value types in flow variables map. Either string for flow variables or FlowInfo
+  message FlowMapValue {
+    oneof flow_variable_value {
+      string flow_variable = 1;
+      FlowInfo flow_info = 2;
+    }
+  }
 
   // List of header strings.
   message Headers {
@@ -60,6 +67,7 @@ message Message {
 // Represents a group of objects associated with a flow.
 message FlowInfo {
   string identifier = 1;
+  // key is the name of a variable
   map<string, google.protobuf.Any> variables = 2;
 }
 
@@ -84,7 +92,7 @@ message ExecutionContext {
     string sub_category = 2;
     string name = 3;
     string reason = 4;
-    map<string, string> attributes = 5;
+    map<string, google.protobuf.Any> attributes = 5;
 
     // Enumerator for category of the Fault.
     enum Category {
