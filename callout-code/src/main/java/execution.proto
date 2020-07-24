@@ -26,12 +26,14 @@ message Execution {
 }
 
 // MessageContext represents the processing of a runtime request, including
-// the request and response/error phases. For a request, the MessageContext
-// is shared across the execution of policies and Java Callouts.
+// the target and proxy request and response/error phases. For a request, the
+// MessageContext is shared across the execution of policies and Java Callouts.
 message MessageContext {
-  Message request_message = 1;
-  Message response_message = 2;
-  Message error_message = 3;
+  Message target_request_message = 1;
+  Message proxy_request_message = 2;
+  Message target_response_message = 3;
+  Message proxy_response_message = 4;
+  Message error_message = 5;
 }
 
 // Representation of a Message that is an abstraction of an HTTP Request
