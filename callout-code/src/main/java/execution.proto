@@ -1,0 +1,108 @@
+// Copyright 2020 Google LLC
+//
+// <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+// except in compliance with the License. You may obtain a copy of the License at
+//
+// <p>https://www.apache.org/licenses/LICENSE-2.0
+//
+// <p>Unless required by applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+// express or implied. See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package apigee;
+
+import "google/protobuf/any.proto";
+
+option java_package = "com.google.apigee";
+
+// Execution holds both the MessageContext and ExecutionContext objects
+// used for java callouts and policy execution.
+message Execution {
+  MessageContext messageContext = 1;
+  ExecutionContext executionContext = 2;
+}
+
+// MessageContext represents the processing of a runtime request, including
+// the target and proxy request and response/error phases. For a request, the
+// MessageContext is shared across the execution of policies and Java Callouts.
+message MessageContext {
+  Message target_request_message = 1;
+  Message proxy_request_message = 2;
+  Message target_response_message = 3;
+  Message proxy_response_message = 4;
+  Message error_message = 5;
+}
+
+// Representation of a Message that is an abstraction of an HTTP Request
+// or HTTP Response. Contains headers, query parameters, and message
+// content.
+message Message {
+  map<string, Headers> header_map = 1;
+  bytes content = 2;
+  map<string, QueryParameters> query_param_map = 3;
+  // map of flow variables that refer to values within a context or
+  // map of unique string identifiers to FlowInfo objects. map key is same as FlowInfo.identifier
+  map<string, FlowMapValue> flow_variables = 4;
+
+  // Possible value types in flow variables map. Either string for flow variables or FlowInfo
+  message FlowMapValue {
+    oneof flow_variable_value {
+      string flow_variable = 1;
+      FlowInfo flow_info = 2;
+    }
+  }
+
+  // List of header strings.
+  message Headers {
+    repeated string headers = 1;
+  }
+
+  // List of query parameters.
+  message QueryParameters {
+    repeated string query_parameters = 1;
+  }
+}
+
+// Represents a group of objects associated with a flow.
+message FlowInfo {
+  string identifier = 1;
+  // key is the name of a variable
+  map<string, google.protobuf.Any> variables = 2;
+}
+
+// Object allowing access to proxy execution context.
+message ExecutionContext {
+  // https://docs.apigee.com/api-platform/fundamentals/what-are-flows
+  FlowType flow_type = 1;
+  // the first fault in this list causes the execution to switch to an error flow.
+  repeated Fault faults = 2;
+
+  // Indicates whether the execution is a request or error flow.
+  enum FlowType {
+    UNKNOWN_FLOW_TYPE = 0;
+    REQUEST = 1;
+    ERROR = 2;
+  }
+
+  // Describes all the exceptions that occurred during the flow as
+  // multiple errors are possible during a flow.
+  message Fault {
+    Category category = 1;
+    string sub_category = 2;
+    string name = 3;
+    string reason = 4;
+    map<string, google.protobuf.Any> attributes = 5;
+
+    // Enumerator for category of the Fault.
+    enum Category {
+      UNKNOWN_CATEGORY = 0;
+      MESSAGING = 1;
+      STEP = 2;
+      TRANSPORT = 3;
+      SYSTEM = 4;
+    }
+  }
+}
