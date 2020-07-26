@@ -58,9 +58,6 @@ public class JavaCalloutRPE implements Execution {
                   executionMessage, CLOUD_FUNCTIONS_URL));
       return ExecutionResult.SUCCESS;
     } catch (Exception exception) {
-      messageContext.setVariable("MORGAN1", exception.toString());
-      String stackTrace = getStackTrace(exception);
-      messageContext.setVariable("MORGAN2", stackTrace);
       return ExecutionResult.ABORT;
     }
   }
