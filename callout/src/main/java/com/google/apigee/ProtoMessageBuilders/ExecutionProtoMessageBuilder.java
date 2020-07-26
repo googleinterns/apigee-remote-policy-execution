@@ -51,14 +51,14 @@ public class ExecutionProtoMessageBuilder {
    *     Protocol Buffer Messages
    */
   public ExecutionOuterClass.Execution buildExecutionMessage(
-      MessageContext messageContext, ExecutionContext executionContext) {
-    ExecutionOuterClass.ExecutionContext executionContextMessage =
+      MessageContext messageContext, ExecutionContext executionContext) throws Exception {
+    ExecutionOuterClass.ExecutionContext executionContextProtoMessage =
         executionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
-    ExecutionOuterClass.MessageContext messageContextMessage =
+    ExecutionOuterClass.MessageContext messageContextProtoMessage =
         messageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
     return ExecutionOuterClass.Execution.newBuilder()
-        .setExecutionContext(executionContextMessage)
-        .setMessageContext(messageContextMessage)
+        .setExecutionContext(executionContextProtoMessage)
+        .setMessageContext(messageContextProtoMessage)
         .build();
   }
 }

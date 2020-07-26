@@ -39,17 +39,28 @@ public class MessageContextProtoMessageBuilder {
    */
   public ExecutionOuterClass.MessageContext buildMessageContextProto(
       MessageContext messageContext) {
-    return ExecutionOuterClass.MessageContext.newBuilder()
-        .setTargetRequestMessage(
-            buildMessageProto(messageContext.getMessage(FlowContext.TARGET_REQUEST)))
-        .setTargetResponseMessage(
-            buildMessageProto(messageContext.getMessage(FlowContext.TARGET_RESPONSE)))
-        .setProxyRequestMessage(
-            buildMessageProto(messageContext.getMessage(FlowContext.PROXY_REQUEST)))
-        .setProxyResponseMessage(
-            buildMessageProto(messageContext.getMessage(FlowContext.PROXY_RESPONSE)))
-        .setErrorMessage(buildMessageProto(messageContext.getErrorMessage()))
-        .build();
+    ExecutionOuterClass.MessageContext.Builder messageContextBuilder =
+        ExecutionOuterClass.MessageContext.newBuilder();
+    if (messageContext.getMessage(FlowContext.TARGET_REQUEST) != null) {
+      messageContextBuilder.setTargetRequestMessage(
+          buildMessageProto(messageContext.getMessage(FlowContext.TARGET_REQUEST)));
+    }
+    if (messageContext.getMessage(FlowContext.PROXY_REQUEST) != null) {
+      messageContextBuilder.setProxyRequestMessage(
+          buildMessageProto(messageContext.getMessage(FlowContext.PROXY_REQUEST)));
+    }
+    if (messageContext.getMessage(FlowContext.TARGET_RESPONSE) != null) {
+      messageContextBuilder.setTargetResponseMessage(
+          buildMessageProto(messageContext.getMessage(FlowContext.TARGET_RESPONSE)));
+    }
+    if (messageContext.getMessage(FlowContext.PROXY_RESPONSE) != null) {
+      messageContextBuilder.setProxyResponseMessage(
+          buildMessageProto(messageContext.getMessage(FlowContext.PROXY_RESPONSE)));
+    }
+    if (messageContext.getErrorMessage() != null) {
+      messageContextBuilder.setErrorMessage(buildMessageProto(messageContext.getErrorMessage()));
+    }
+    return messageContextBuilder.build();
   }
 
   /**
@@ -59,12 +70,18 @@ public class MessageContextProtoMessageBuilder {
    * @return Message Protocol Buffer Message
    */
   private ExecutionOuterClass.Message buildMessageProto(Message message) {
-    return ExecutionOuterClass.Message.newBuilder()
-        .setContent(ByteString.copyFrom(message.getContent(), StandardCharsets.UTF_8))
-        .putAllHeaderMap(buildHeaderMap(message))
-        .putAllQueryParamMap(buildQueryParametersMap(message))
-        .putAllFlowVariables(new HashMap<>())
-        .build();
+    ExecutionOuterClass.Message.Builder messageBuilder = ExecutionOuterClass.Message.newBuilder();
+    if (message.getContent() != null) {
+      messageBuilder.setContent(ByteString.copyFrom(message.getContent(), StandardCharsets.UTF_8));
+    }
+    if (message.getHeaderNames() != null) {
+      messageBuilder.putAllHeaderMap(buildHeaderMap(message));
+    }
+    if (message.getQueryParamNames() != null) {
+      messageBuilder.putAllQueryParamMap(buildQueryParametersMap(message));
+    }
+    messageBuilder.putAllFlowVariables(new HashMap<>());
+    return messageBuilder.build();
   }
 
   /**

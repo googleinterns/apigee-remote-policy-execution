@@ -39,13 +39,15 @@ public class ExecutionContextProtoMessageBuilder {
    */
   public ExecutionOuterClass.ExecutionContext buildExecutionContextProto(
       ExecutionContext executionContext) {
-    return ExecutionOuterClass.ExecutionContext.newBuilder()
-        .setFlowType(getFlowType(executionContext))
-        .addAllFaults(
-            executionContext.getFaults().stream()
-                .map(this::buildFault)
-                .collect(Collectors.toList()))
-        .build();
+    ExecutionOuterClass.ExecutionContext.Builder executionContextBuilder = ExecutionOuterClass.ExecutionContext.newBuilder();
+    executionContextBuilder.setFlowType(getFlowType(executionContext));
+    if (executionContext.getFaults() != null) {
+      executionContextBuilder.addAllFaults(
+              executionContext.getFaults().stream()
+                      .map(this::buildFault)
+                      .collect(Collectors.toList()));
+    }
+    return executionContextBuilder.build();
   }
 
   /**
