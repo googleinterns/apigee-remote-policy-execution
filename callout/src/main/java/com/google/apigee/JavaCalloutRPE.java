@@ -22,9 +22,6 @@ import com.google.apigee.ProtoMessageBuilders.ExecutionContextProtoMessageBuilde
 import com.google.apigee.ProtoMessageBuilders.ExecutionProtoMessageBuilder;
 import com.google.apigee.ProtoMessageBuilders.MessageContextProtoMessageBuilder;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 /**
  * Java Callout demonstrating remote execution of a Java Callout or Apigee Policy on Google Cloud
  * Functions.
@@ -60,12 +57,5 @@ public class JavaCalloutRPE implements Execution {
     } catch (Exception exception) {
       return ExecutionResult.ABORT;
     }
-  }
-
-  private String getStackTrace(final Throwable throwable) {
-    final StringWriter sw = new StringWriter();
-    final PrintWriter pw = new PrintWriter(sw, true);
-    throwable.printStackTrace(pw);
-    return sw.getBuffer().toString();
   }
 }
