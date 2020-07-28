@@ -39,13 +39,16 @@ public class ExecutionContextProtoMessageBuilder {
    *     Message.
    * @return ExecutionContext Protocol Buffer Message
    */
-  public Execute.ExecutionContext buildExecutionContextProto(ExecutionContext executionContext) {
+  public static Execute.ExecutionContext buildExecutionContextProto(
+      ExecutionContext executionContext) {
     Execute.ExecutionContext.Builder executionContextBuilder =
         Execute.ExecutionContext.newBuilder();
     executionContextBuilder.setFlowType(getFlowType(executionContext));
     if (executionContext.getFaults() != null) {
       executionContextBuilder.addAllFaults(
-          executionContext.getFaults().stream().map(this::buildFault).collect(Collectors.toList()));
+          executionContext.getFaults().stream()
+              .map(ExecutionContextProtoMessageBuilder::buildFault)
+              .collect(Collectors.toList()));
     }
     return executionContextBuilder.build();
   }
@@ -57,14 +60,14 @@ public class ExecutionContextProtoMessageBuilder {
    * @param executionContext {@link ExecutionContext} from which to extract the flow type.
    * @return ExecutionContext.FlowType enumerator value
    */
-  private Execute.ExecutionContext.FlowType getFlowType(ExecutionContext executionContext) {
+  private static Execute.ExecutionContext.FlowType getFlowType(ExecutionContext executionContext) {
     if (executionContext.isErrorFlow()) {
       return Execute.ExecutionContext.FlowType.ERROR;
-    }
-    if (executionContext.isRequestFlow()) {
+    } else if (executionContext.isRequestFlow()) {
       return Execute.ExecutionContext.FlowType.REQUEST;
+    } else {
+      return Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE;
     }
-    return Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE;
   }
 
   /**
@@ -73,7 +76,7 @@ public class ExecutionContextProtoMessageBuilder {
    * @param fault {@link Fault} used to construct the Protocol Buffer Message.
    * @return Fault Protocol Buffer Message
    */
-  private Execute.ExecutionContext.Fault buildFault(Fault fault) {
+  private static Execute.ExecutionContext.Fault buildFault(Fault fault) {
     return Execute.ExecutionContext.Fault.newBuilder()
         .setCategory(getFaultCategory(fault))
         .setSubCategory(fault.getSubCategory())
@@ -89,7 +92,7 @@ public class ExecutionContextProtoMessageBuilder {
    * @param fault Fault from which to extract the Category
    * @return Fault.Category Protocol Buffer enumerator value
    */
-  private Execute.ExecutionContext.Fault.Category getFaultCategory(Fault fault) {
+  private static Execute.ExecutionContext.Fault.Category getFaultCategory(Fault fault) {
     switch (fault.getCategory()) {
       case Messaging:
         return Execute.ExecutionContext.Fault.Category.MESSAGING;
@@ -110,7 +113,7 @@ public class ExecutionContextProtoMessageBuilder {
    * @param fault Fault from which attributes map is extracted from
    * @return Map of String to Any for protocol buffer message
    */
-  private Map<String, Any> buildAttributesMap(Fault fault) {
+  private static Map<String, Any> buildAttributesMap(Fault fault) {
     Map<String, Any> attributesMap = new HashMap<>();
     fault
         .getAttributes()
@@ -132,7 +135,7 @@ public class ExecutionContextProtoMessageBuilder {
    * @return A byte array of the object
    * @throws IOException from ObjectOutputStream
    */
-  private byte[] objectToByteArray(Object obj) throws IOException {
+  private static byte[] objectToByteArray(Object obj) throws IOException {
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
     objectOutputStream.writeObject(obj);

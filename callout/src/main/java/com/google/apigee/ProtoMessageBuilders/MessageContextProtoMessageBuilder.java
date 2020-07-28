@@ -37,7 +37,7 @@ public class MessageContextProtoMessageBuilder {
    *     Protocol Buffer Message.
    * @return MessageContext Protocol Buffer Message
    */
-  public Execute.MessageContext buildMessageContextProto(MessageContext messageContext) {
+  public static Execute.MessageContext buildMessageContextProto(MessageContext messageContext) {
     Execute.MessageContext.Builder messageContextBuilder = Execute.MessageContext.newBuilder();
     if (messageContext.getMessage(FlowContext.TARGET_REQUEST) != null) {
       messageContextBuilder.setTargetRequestMessage(
@@ -67,7 +67,7 @@ public class MessageContextProtoMessageBuilder {
    * @param message {@link Message} object used to construct the Message Protocol Buffer Message.
    * @return Message Protocol Buffer Message
    */
-  private Execute.Message buildMessageProto(Message message) {
+  private static Execute.Message buildMessageProto(Message message) {
     Execute.Message.Builder messageBuilder = Execute.Message.newBuilder();
     if (message.getContent() != null) {
       messageBuilder.setContent(ByteString.copyFrom(message.getContent(), StandardCharsets.UTF_8));
@@ -89,7 +89,7 @@ public class MessageContextProtoMessageBuilder {
    * @return FlowMapValue to be stored in the Flow Variable map in the Message Protocol Buffer
    *     Message.
    */
-  private Execute.Message.FlowMapValue buildFlowMapValue(Object value) {
+  private static Execute.Message.FlowMapValue buildFlowMapValue(Object value) {
     if (!(value instanceof FlowInfo) && !(value instanceof String)) {
       throw new IllegalArgumentException();
     }
@@ -108,7 +108,7 @@ public class MessageContextProtoMessageBuilder {
    * @param flowInfo {@link FlowInfo} object used to construct the FlowInfo Protocol Buffer Message.
    * @return FlowInfo Protocol Buffer Message
    */
-  private Execute.FlowInfo buildFlowInfoProto(FlowInfo flowInfo) {
+  private static Execute.FlowInfo buildFlowInfoProto(FlowInfo flowInfo) {
     return Execute.FlowInfo.newBuilder()
         .setIdentifier(flowInfo.getIdentifier())
         .putAllVariables(new HashMap<>())
@@ -122,7 +122,7 @@ public class MessageContextProtoMessageBuilder {
    * @param message {@link Message} object from which to extract the header map
    * @return Map of String to Headers Protocol Buffer Message which is just a list of String
    */
-  private Map<String, Execute.Message.Headers> buildHeaderMap(Message message) {
+  private static Map<String, Execute.Message.Headers> buildHeaderMap(Message message) {
     Map<String, Execute.Message.Headers> headerMap = new HashMap<>();
     message
         .getHeaderNames()
@@ -143,7 +143,8 @@ public class MessageContextProtoMessageBuilder {
    * @param message {@link Message} object from which to extract the query parameters map.
    * @return Map of String to QueryParameters Protocol Buffer Message which is just a list of String
    */
-  private Map<String, Execute.Message.QueryParameters> buildQueryParametersMap(Message message) {
+  private static Map<String, Execute.Message.QueryParameters> buildQueryParametersMap(
+      Message message) {
     Map<String, Execute.Message.QueryParameters> queryParametersMap = new HashMap<>();
     message
         .getQueryParamNames()

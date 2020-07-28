@@ -23,22 +23,6 @@ import com.google.apigee.Execute;
  * ExecutionContext and MessageContext Protocol Buffer Messages.
  */
 public class ExecutionProtoMessageBuilder {
-
-  private final ExecutionContextProtoMessageBuilder executionContextProtoMessageBuilder;
-  private final MessageContextProtoMessageBuilder messageContextProtoMessageBuilder;
-
-  /**
-   * @param executionContextProtoMessageBuilder Builder for ExecutionContext Protocol Buffer
-   *     Messages.
-   * @param messageContextProtoMessageBuilder Builder for MessageContext Protocol Buffer Messages.
-   */
-  public ExecutionProtoMessageBuilder(
-      ExecutionContextProtoMessageBuilder executionContextProtoMessageBuilder,
-      MessageContextProtoMessageBuilder messageContextProtoMessageBuilder) {
-    this.executionContextProtoMessageBuilder = executionContextProtoMessageBuilder;
-    this.messageContextProtoMessageBuilder = messageContextProtoMessageBuilder;
-  }
-
   /**
    * Builds an Execution Protocol Buffer Message which contains the ExecutionContext and
    * MessageContext Protocol Buffer Messages.
@@ -50,12 +34,12 @@ public class ExecutionProtoMessageBuilder {
    * @return Execution Protocol Buffer Message containing the ExecutionContext and MessageContext
    *     Protocol Buffer Messages
    */
-  public Execute.Execution buildExecutionMessage(
-      MessageContext messageContext, ExecutionContext executionContext) throws Exception {
+  public static Execute.Execution buildExecutionMessage(
+      MessageContext messageContext, ExecutionContext executionContext) {
     Execute.ExecutionContext executionContextProtoMessage =
-        executionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
+        ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
     Execute.MessageContext messageContextProtoMessage =
-        messageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
+        MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
     return Execute.Execution.newBuilder()
         .setExecutionContext(executionContextProtoMessage)
         .setMessageContext(messageContextProtoMessage)
