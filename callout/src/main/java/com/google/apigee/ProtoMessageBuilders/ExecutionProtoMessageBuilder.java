@@ -16,7 +16,7 @@ package com.google.apigee.ProtoMessageBuilders;
 
 import com.apigee.flow.execution.ExecutionContext;
 import com.apigee.flow.message.MessageContext;
-import com.google.apigee.ExecutionOuterClass;
+import com.google.apigee.Execute;
 
 /**
  * Builder for Execution Protocol Buffer Message which handles the construction of the
@@ -50,13 +50,13 @@ public class ExecutionProtoMessageBuilder {
    * @return Execution Protocol Buffer Message containing the ExecutionContext and MessageContext
    *     Protocol Buffer Messages
    */
-  public ExecutionOuterClass.Execution buildExecutionMessage(
+  public Execute.Execution buildExecutionMessage(
       MessageContext messageContext, ExecutionContext executionContext) throws Exception {
-    ExecutionOuterClass.ExecutionContext executionContextProtoMessage =
+    Execute.ExecutionContext executionContextProtoMessage =
         executionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
-    ExecutionOuterClass.MessageContext messageContextProtoMessage =
+    Execute.MessageContext messageContextProtoMessage =
         messageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
-    return ExecutionOuterClass.Execution.newBuilder()
+    return Execute.Execution.newBuilder()
         .setExecutionContext(executionContextProtoMessage)
         .setMessageContext(messageContextProtoMessage)
         .build();

@@ -17,6 +17,7 @@ package apigee;
 import "google/protobuf/any.proto";
 
 option java_package = "com.google.apigee";
+option java_outer_classname = "Execute";
 
 // Execution holds both the MessageContext and ExecutionContext objects
 // used for java callouts and policy execution.

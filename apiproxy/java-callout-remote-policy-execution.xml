@@ -1,0 +1,3 @@
+<APIProxy name="java-callout-rpe">
+	  <Description>A Java Callout which delegates execution to a remote HTTP server.</Description>
+</APIProxy>

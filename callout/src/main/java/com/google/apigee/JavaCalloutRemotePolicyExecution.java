@@ -23,13 +23,12 @@ import com.google.apigee.ProtoMessageBuilders.ExecutionProtoMessageBuilder;
 import com.google.apigee.ProtoMessageBuilders.MessageContextProtoMessageBuilder;
 
 /**
- * Java Callout demonstrating remote execution of a Java Callout or Apigee Policy on Google Cloud
- * Functions.
+ * Java Callout demonstrating execution of a Java Callout or Apigee Policy on remote HTTP Server.
  */
-public class JavaCalloutRPE implements Execution {
+public class JavaCalloutRemotePolicyExecution implements Execution {
 
-  // URL of the Cloud Functions endpoint
-  private final String CLOUD_FUNCTIONS_URL = "";
+  // URL of the HTTP Server endpoint
+  private final String URL_STRING = "";
 
   /**
    * Constructs a Protocol Buffer Message using the {@link MessageContext} and {@link
@@ -37,24 +36,22 @@ public class JavaCalloutRPE implements Execution {
    *
    * @param messageContext Object allowing access to entities inside the flow
    * @param executionContext Object allowing access to proxy execution context
-   * @return A successful execution after response is received from Cloud Functions
+   * @return A successful execution after response is received from HTTP Server
    */
   public ExecutionResult execute(MessageContext messageContext, ExecutionContext executionContext) {
     try {
       ExecutionProtoMessageBuilder executionProtoMessageBuilder =
           new ExecutionProtoMessageBuilder(
               new ExecutionContextProtoMessageBuilder(), new MessageContextProtoMessageBuilder());
-      ExecutionOuterClass.Execution executionMessage =
+      Execute.Execution executionMessage =
           executionProtoMessageBuilder.buildExecutionMessage(messageContext, executionContext);
       RemotePolicyExecutionHandler remotePolicyExecutionHandler =
           new RemotePolicyExecutionHandler();
-      messageContext
-          .getMessage()
-          .setContent(
-              remotePolicyExecutionHandler.sendCloudFunctionsRequest(
-                  executionMessage, CLOUD_FUNCTIONS_URL));
+      String remoteExecutionResult =
+          remotePolicyExecutionHandler.sendCloudFunctionsRequest(executionMessage, URL_STRING);
+      messageContext.getMessage().setContent(remoteExecutionResult);
       return ExecutionResult.SUCCESS;
-    } catch (Exception exception) {
+    } catch (Throwable throwable) {
       return ExecutionResult.ABORT;
     }
   }

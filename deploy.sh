@@ -8,7 +8,7 @@ read -s password
 
 echo Deploying $proxy to $env on $url using $username and $org
 
-./tools/deploy.py -n java-callout-rpe -u $username:$password -o $org -h $url -e $env -p / -d ./
+./tools/deploy.py -n java-callout-remote-policy-execution -u $username:$password -o $org -h $url -e $env -p / -d ./
 
 echo "If 'State: deployed', then your API Proxy is ready to be invoked."
 

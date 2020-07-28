@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.google.apigee</groupId>
-    <artifactId>java-callout-rpe</artifactId>
+    <artifactId>java-callout-remote-policy-execution</artifactId>
     <version>1.0</version>
 
     <packaging>jar</packaging>
@@ -66,7 +66,7 @@
                             <addProtoSources>all</addProtoSources>
                             <includeMavenTypes>direct</includeMavenTypes>
                             <inputDirectories>
-                                <include>src/main/java</include>
+                                <include>../proto</include>
                             </inputDirectories>
                             <outputTargets>
                                 <outputTarget>

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<JavaCallout name="java-callout-rpe">
-        <ClassName>com.google.apigee.JavaCalloutRPE</ClassName>
-        <ResourceURL>java://java-callout-rpe.jar</ResourceURL>
-        <Properties />
-</JavaCallout>

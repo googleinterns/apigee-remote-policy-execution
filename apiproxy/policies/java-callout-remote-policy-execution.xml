@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<JavaCallout name="java-callout-remote-policy-execution">
+        <ClassName>com.google.apigee.JavaCalloutRemotePolicyExecution</ClassName>
+        <ResourceURL>java://java-callout-remote-policy-execution.jar</ResourceURL>
+        <Properties />
+</JavaCallout>

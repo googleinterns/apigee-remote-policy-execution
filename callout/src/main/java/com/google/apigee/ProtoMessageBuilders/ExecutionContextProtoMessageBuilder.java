@@ -16,11 +16,13 @@ package com.google.apigee.ProtoMessageBuilders;
 
 import com.apigee.flow.Fault;
 import com.apigee.flow.execution.ExecutionContext;
-import com.google.apigee.ExecutionOuterClass;
+import com.google.apigee.Execute;
 import com.google.protobuf.Any;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,15 +39,13 @@ public class ExecutionContextProtoMessageBuilder {
    *     Message.
    * @return ExecutionContext Protocol Buffer Message
    */
-  public ExecutionOuterClass.ExecutionContext buildExecutionContextProto(
-      ExecutionContext executionContext) {
-    ExecutionOuterClass.ExecutionContext.Builder executionContextBuilder = ExecutionOuterClass.ExecutionContext.newBuilder();
+  public Execute.ExecutionContext buildExecutionContextProto(ExecutionContext executionContext) {
+    Execute.ExecutionContext.Builder executionContextBuilder =
+        Execute.ExecutionContext.newBuilder();
     executionContextBuilder.setFlowType(getFlowType(executionContext));
     if (executionContext.getFaults() != null) {
       executionContextBuilder.addAllFaults(
-              executionContext.getFaults().stream()
-                      .map(this::buildFault)
-                      .collect(Collectors.toList()));
+          executionContext.getFaults().stream().map(this::buildFault).collect(Collectors.toList()));
     }
     return executionContextBuilder.build();
   }
@@ -57,15 +57,14 @@ public class ExecutionContextProtoMessageBuilder {
    * @param executionContext {@link ExecutionContext} from which to extract the flow type.
    * @return ExecutionContext.FlowType enumerator value
    */
-  private ExecutionOuterClass.ExecutionContext.FlowType getFlowType(
-      ExecutionContext executionContext) {
+  private Execute.ExecutionContext.FlowType getFlowType(ExecutionContext executionContext) {
     if (executionContext.isErrorFlow()) {
-      return ExecutionOuterClass.ExecutionContext.FlowType.ERROR;
+      return Execute.ExecutionContext.FlowType.ERROR;
     }
     if (executionContext.isRequestFlow()) {
-      return ExecutionOuterClass.ExecutionContext.FlowType.REQUEST;
+      return Execute.ExecutionContext.FlowType.REQUEST;
     }
-    return ExecutionOuterClass.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE;
+    return Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE;
   }
 
   /**
@@ -74,8 +73,8 @@ public class ExecutionContextProtoMessageBuilder {
    * @param fault {@link Fault} used to construct the Protocol Buffer Message.
    * @return Fault Protocol Buffer Message
    */
-  private ExecutionOuterClass.ExecutionContext.Fault buildFault(Fault fault) {
-    return ExecutionOuterClass.ExecutionContext.Fault.newBuilder()
+  private Execute.ExecutionContext.Fault buildFault(Fault fault) {
+    return Execute.ExecutionContext.Fault.newBuilder()
         .setCategory(getFaultCategory(fault))
         .setSubCategory(fault.getSubCategory())
         .setName(fault.getName())
@@ -90,18 +89,18 @@ public class ExecutionContextProtoMessageBuilder {
    * @param fault Fault from which to extract the Category
    * @return Fault.Category Protocol Buffer enumerator value
    */
-  private ExecutionOuterClass.ExecutionContext.Fault.Category getFaultCategory(Fault fault) {
+  private Execute.ExecutionContext.Fault.Category getFaultCategory(Fault fault) {
     switch (fault.getCategory()) {
       case Messaging:
-        return ExecutionOuterClass.ExecutionContext.Fault.Category.MESSAGING;
+        return Execute.ExecutionContext.Fault.Category.MESSAGING;
       case Step:
-        return ExecutionOuterClass.ExecutionContext.Fault.Category.STEP;
+        return Execute.ExecutionContext.Fault.Category.STEP;
       case Transport:
-        return ExecutionOuterClass.ExecutionContext.Fault.Category.TRANSPORT;
+        return Execute.ExecutionContext.Fault.Category.TRANSPORT;
       case System:
-        return ExecutionOuterClass.ExecutionContext.Fault.Category.SYSTEM;
+        return Execute.ExecutionContext.Fault.Category.SYSTEM;
       default:
-        return ExecutionOuterClass.ExecutionContext.Fault.Category.UNKNOWN_CATEGORY;
+        return Execute.ExecutionContext.Fault.Category.UNKNOWN_CATEGORY;
     }
   }
 
@@ -119,8 +118,8 @@ public class ExecutionContextProtoMessageBuilder {
             (key, value) -> {
               try {
                 attributesMap.put(key, Any.parseFrom(objectToByteArray(value)));
-              } catch (Exception exception) {
-                exception.printStackTrace();
+              } catch (IOException exception) {
+                throw new UncheckedIOException(exception);
               }
             });
     return attributesMap;
@@ -131,9 +130,9 @@ public class ExecutionContextProtoMessageBuilder {
    *
    * @param obj Object to convert to byte array
    * @return A byte array of the object
-   * @throws Exception IOExceptions from ObjectOutputStream
+   * @throws IOException from ObjectOutputStream
    */
-  private byte[] objectToByteArray(Object obj) throws Exception {
+  private byte[] objectToByteArray(Object obj) throws IOException {
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
     objectOutputStream.writeObject(obj);

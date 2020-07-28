@@ -18,7 +18,7 @@ import com.apigee.flow.FlowInfo;
 import com.apigee.flow.message.FlowContext;
 import com.apigee.flow.message.Message;
 import com.apigee.flow.message.MessageContext;
-import com.google.apigee.ExecutionOuterClass;
+import com.google.apigee.Execute;
 import com.google.protobuf.ByteString;
 
 import java.nio.charset.StandardCharsets;
@@ -37,10 +37,8 @@ public class MessageContextProtoMessageBuilder {
    *     Protocol Buffer Message.
    * @return MessageContext Protocol Buffer Message
    */
-  public ExecutionOuterClass.MessageContext buildMessageContextProto(
-      MessageContext messageContext) {
-    ExecutionOuterClass.MessageContext.Builder messageContextBuilder =
-        ExecutionOuterClass.MessageContext.newBuilder();
+  public Execute.MessageContext buildMessageContextProto(MessageContext messageContext) {
+    Execute.MessageContext.Builder messageContextBuilder = Execute.MessageContext.newBuilder();
     if (messageContext.getMessage(FlowContext.TARGET_REQUEST) != null) {
       messageContextBuilder.setTargetRequestMessage(
           buildMessageProto(messageContext.getMessage(FlowContext.TARGET_REQUEST)));
@@ -69,8 +67,8 @@ public class MessageContextProtoMessageBuilder {
    * @param message {@link Message} object used to construct the Message Protocol Buffer Message.
    * @return Message Protocol Buffer Message
    */
-  private ExecutionOuterClass.Message buildMessageProto(Message message) {
-    ExecutionOuterClass.Message.Builder messageBuilder = ExecutionOuterClass.Message.newBuilder();
+  private Execute.Message buildMessageProto(Message message) {
+    Execute.Message.Builder messageBuilder = Execute.Message.newBuilder();
     if (message.getContent() != null) {
       messageBuilder.setContent(ByteString.copyFrom(message.getContent(), StandardCharsets.UTF_8));
     }
@@ -91,18 +89,16 @@ public class MessageContextProtoMessageBuilder {
    * @return FlowMapValue to be stored in the Flow Variable map in the Message Protocol Buffer
    *     Message.
    */
-  private ExecutionOuterClass.Message.FlowMapValue buildFlowMapValue(Object value) {
+  private Execute.Message.FlowMapValue buildFlowMapValue(Object value) {
     if (!(value instanceof FlowInfo) && !(value instanceof String)) {
       throw new IllegalArgumentException();
     }
     if (value instanceof FlowInfo) {
-      return ExecutionOuterClass.Message.FlowMapValue.newBuilder()
+      return Execute.Message.FlowMapValue.newBuilder()
           .setFlowInfo((buildFlowInfoProto((FlowInfo) value)))
           .build();
     } else {
-      return ExecutionOuterClass.Message.FlowMapValue.newBuilder()
-          .setFlowVariable((String) value)
-          .build();
+      return Execute.Message.FlowMapValue.newBuilder().setFlowVariable((String) value).build();
     }
   }
 
@@ -112,8 +108,8 @@ public class MessageContextProtoMessageBuilder {
    * @param flowInfo {@link FlowInfo} object used to construct the FlowInfo Protocol Buffer Message.
    * @return FlowInfo Protocol Buffer Message
    */
-  private ExecutionOuterClass.FlowInfo buildFlowInfoProto(FlowInfo flowInfo) {
-    return ExecutionOuterClass.FlowInfo.newBuilder()
+  private Execute.FlowInfo buildFlowInfoProto(FlowInfo flowInfo) {
+    return Execute.FlowInfo.newBuilder()
         .setIdentifier(flowInfo.getIdentifier())
         .putAllVariables(new HashMap<>())
         .build();
@@ -126,15 +122,15 @@ public class MessageContextProtoMessageBuilder {
    * @param message {@link Message} object from which to extract the header map
    * @return Map of String to Headers Protocol Buffer Message which is just a list of String
    */
-  private Map<String, ExecutionOuterClass.Message.Headers> buildHeaderMap(Message message) {
-    Map<String, ExecutionOuterClass.Message.Headers> headerMap = new HashMap<>();
+  private Map<String, Execute.Message.Headers> buildHeaderMap(Message message) {
+    Map<String, Execute.Message.Headers> headerMap = new HashMap<>();
     message
         .getHeaderNames()
         .forEach(
             headerName ->
                 headerMap.put(
                     headerName,
-                    ExecutionOuterClass.Message.Headers.newBuilder()
+                    Execute.Message.Headers.newBuilder()
                         .addAllHeaders(message.getHeaders(headerName))
                         .build()));
     return headerMap;
@@ -147,16 +143,15 @@ public class MessageContextProtoMessageBuilder {
    * @param message {@link Message} object from which to extract the query parameters map.
    * @return Map of String to QueryParameters Protocol Buffer Message which is just a list of String
    */
-  private Map<String, ExecutionOuterClass.Message.QueryParameters> buildQueryParametersMap(
-      Message message) {
-    Map<String, ExecutionOuterClass.Message.QueryParameters> queryParametersMap = new HashMap<>();
+  private Map<String, Execute.Message.QueryParameters> buildQueryParametersMap(Message message) {
+    Map<String, Execute.Message.QueryParameters> queryParametersMap = new HashMap<>();
     message
         .getQueryParamNames()
         .forEach(
             queryParamName ->
                 queryParametersMap.put(
                     queryParamName,
-                    ExecutionOuterClass.Message.QueryParameters.newBuilder()
+                    Execute.Message.QueryParameters.newBuilder()
                         .addAllQueryParameters(message.getHeaders(queryParamName))
                         .build()));
     return queryParametersMap;

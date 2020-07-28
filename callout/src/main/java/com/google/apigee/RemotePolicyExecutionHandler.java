@@ -1,5 +1,14 @@
 package com.google.apigee;
 
+import com.apigee.flow.MessageFlowImpl;
+import com.apigee.flow.execution.ExecutionContext;
+import com.apigee.flow.execution.ExecutionContextImpl;
+import com.apigee.flow.message.FlowContext;
+import com.apigee.flow.message.Message;
+import com.apigee.flow.message.MessageContext;
+import com.apigee.flow.message.MessageContextImpl;
+import com.apigee.flow.message.MessageImpl;
+import com.apigee.flow.message.TransportMessageFactory;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpRequest;
@@ -32,9 +41,9 @@ public class RemotePolicyExecutionHandler {
    * @throws IOException
    */
   public String sendCloudFunctionsRequest(
-      ExecutionOuterClass.Execution executionProtoMessage, String urlString) throws IOException {
+      Execute.Execution executionProtoMessage, String urlString) throws IOException {
 //    Credentials credentials =
-//        ServiceAccountCredentials.fromStream(new FileInputStream(new File("SERVICEACCOUNTFILE")))
+//        ServiceAccountCredentials.fromStream(new FileInputStream(new File("/usr/local/google/home/morganklaw/workspace/apigee-remote-policy-execution/cloud-function/iconic-computer-279721-1c0f8118cd6c.json")))
 //            .createScoped("https://www.googleapis.com/auth/cloud-platform");
 //
 //    IdTokenCredentials idTokenCredentials =
@@ -51,7 +60,6 @@ public class RemotePolicyExecutionHandler {
 //    HttpResponse httpResponse = request.execute();
 //
 //    return CharStreams.toString(new InputStreamReader(httpResponse.getContent(), Charsets.UTF_8));
-
-      return "";
+    return "";
   }
 }

@@ -6,7 +6,7 @@
         <Request/>
         <Response>
             <Step>
-                <Name>java-callout-rpe</Name>
+                <Name>java-callout-remote-policy-execution</Name>
             </Step>
         </Response>
     </PreFlow>
@@ -16,7 +16,7 @@
     </PostFlow>
     <Flows/>
     <HTTPProxyConnection>
-        <BasePath>/java-callout-rpe</BasePath>
+        <BasePath>/java-callout-remote-policy-execution</BasePath>
         <Properties/>
         <VirtualHost>default</VirtualHost>
         <VirtualHost>secure</VirtualHost>
