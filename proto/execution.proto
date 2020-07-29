@@ -96,7 +96,7 @@ message ExecutionContext {
     string sub_category = 2;
     string name = 3;
     string reason = 4;
-    map<string, bytes> attributes = 5;
+    map<string, string> attributes = 5;
 
     // Enumerator for category of the Fault.
     enum Category {

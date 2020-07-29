@@ -17,13 +17,7 @@ package com.google.apigee.ProtoMessageBuilders;
 import com.apigee.flow.Fault;
 import com.apigee.flow.execution.ExecutionContext;
 import com.google.apigee.Execute;
-import com.google.protobuf.ByteString;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.UncheckedIOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -81,8 +75,12 @@ public class ExecutionContextProtoMessageBuilder {
         Execute.ExecutionContext.Fault.newBuilder()
             .setCategory(getFaultCategory(fault))
             .setSubCategory(fault.getSubCategory())
-            .setName(fault.getName())
-            .putAllAttributes(buildAttributesMap(fault));
+            .setName(fault.getName());
+    if (fault.getAttributes() != null) {
+      faultBuilder.putAllAttributes(
+          fault.getAttributes().entrySet().stream()
+              .collect(Collectors.toMap(Map.Entry::getKey, e -> (String) e.getValue())));
+    }
     if (fault.getReason() != null) {
       faultBuilder.setReason(fault.getReason());
     }
@@ -108,42 +106,5 @@ public class ExecutionContextProtoMessageBuilder {
       default:
         return Execute.ExecutionContext.Fault.Category.UNKNOWN_CATEGORY;
     }
-  }
-
-  /**
-   * Constructs the String to Any attributes map for a Fault protocol buffer message
-   *
-   * @param fault Fault from which attributes map is extracted from
-   * @return Map of String to Any for protocol buffer message
-   */
-  private static Map<String, ByteString> buildAttributesMap(Fault fault) {
-    Map<String, ByteString> attributesMap = new HashMap<>();
-    if (fault.getAttributes() != null) {
-      fault
-          .getAttributes()
-          .forEach(
-              (key, value) -> {
-                try {
-                  attributesMap.put(key, ByteString.copyFrom(objectToByteArray(value)));
-                } catch (IOException exception) {
-                  throw new UncheckedIOException(exception);
-                }
-              });
-    }
-    return attributesMap;
-  }
-
-  /**
-   * Converts an object to a byte array. Used to convert the values in attributes map of a Fault.
-   *
-   * @param obj Object to convert to byte array
-   * @return A byte array of the object
-   * @throws IOException from ObjectOutputStream
-   */
-  private static byte[] objectToByteArray(Object obj) throws IOException {
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-    objectOutputStream.writeObject(obj);
-    return byteArrayOutputStream.toByteArray();
   }
 }
