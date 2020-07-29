@@ -24,6 +24,7 @@ option java_outer_classname = "Execute";
 message Execution {
   MessageContext messageContext = 1;
   ExecutionContext executionContext = 2;
+  ExecutionResult executionResult = 3;
 }
 
 // MessageContext represents the processing of a runtime request, including
@@ -95,7 +96,7 @@ message ExecutionContext {
     string sub_category = 2;
     string name = 3;
     string reason = 4;
-    map<string, google.protobuf.Any> attributes = 5;
+    map<string, bytes> attributes = 5;
 
     // Enumerator for category of the Fault.
     enum Category {
@@ -105,5 +106,21 @@ message ExecutionContext {
       TRANSPORT = 3;
       SYSTEM = 4;
     }
+  }
+}
+
+// Represents result of the execution.
+message ExecutionResult {
+  Action action = 1;
+  map<string, string> properties = 2;
+  map<string, string> error_response_headers = 3;
+  string error_response = 4;
+
+  // Enumerator for action of the ExecutionResult.
+  enum Action {
+    UNKNOWN_ACTION = 0;
+    CONTINUE = 1;
+    PAUSE = 2;
+    ABORT = 3;
   }
 }

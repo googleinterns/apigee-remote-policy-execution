@@ -153,7 +153,7 @@ public class MessageContextProtoMessageBuilder {
                 queryParametersMap.put(
                     queryParamName,
                     Execute.Message.QueryParameters.newBuilder()
-                        .addAllQueryParameters(message.getHeaders(queryParamName))
+                        .addAllQueryParameters(message.getQueryParams(queryParamName))
                         .build()));
     return queryParametersMap;
   }

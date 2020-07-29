@@ -17,7 +17,7 @@ package com.google.apigee.ProtoMessageBuilders;
 import com.apigee.flow.Fault;
 import com.apigee.flow.execution.ExecutionContext;
 import com.google.apigee.Execute;
-import com.google.protobuf.Any;
+import com.google.protobuf.ByteString;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -77,13 +77,16 @@ public class ExecutionContextProtoMessageBuilder {
    * @return Fault Protocol Buffer Message
    */
   private static Execute.ExecutionContext.Fault buildFault(Fault fault) {
-    return Execute.ExecutionContext.Fault.newBuilder()
-        .setCategory(getFaultCategory(fault))
-        .setSubCategory(fault.getSubCategory())
-        .setName(fault.getName())
-        .setReason(fault.getReason())
-        .putAllAttributes(buildAttributesMap(fault))
-        .build();
+    Execute.ExecutionContext.Fault.Builder faultBuilder =
+        Execute.ExecutionContext.Fault.newBuilder()
+            .setCategory(getFaultCategory(fault))
+            .setSubCategory(fault.getSubCategory())
+            .setName(fault.getName())
+            .putAllAttributes(buildAttributesMap(fault));
+    if (fault.getReason() != null) {
+      faultBuilder.setReason(fault.getReason());
+    }
+    return faultBuilder.build();
   }
 
   /**
@@ -113,18 +116,20 @@ public class ExecutionContextProtoMessageBuilder {
    * @param fault Fault from which attributes map is extracted from
    * @return Map of String to Any for protocol buffer message
    */
-  private static Map<String, Any> buildAttributesMap(Fault fault) {
-    Map<String, Any> attributesMap = new HashMap<>();
-    fault
-        .getAttributes()
-        .forEach(
-            (key, value) -> {
-              try {
-                attributesMap.put(key, Any.parseFrom(objectToByteArray(value)));
-              } catch (IOException exception) {
-                throw new UncheckedIOException(exception);
-              }
-            });
+  private static Map<String, ByteString> buildAttributesMap(Fault fault) {
+    Map<String, ByteString> attributesMap = new HashMap<>();
+    if (fault.getAttributes() != null) {
+      fault
+          .getAttributes()
+          .forEach(
+              (key, value) -> {
+                try {
+                  attributesMap.put(key, ByteString.copyFrom(objectToByteArray(value)));
+                } catch (IOException exception) {
+                  throw new UncheckedIOException(exception);
+                }
+              });
+    }
     return attributesMap;
   }
 
