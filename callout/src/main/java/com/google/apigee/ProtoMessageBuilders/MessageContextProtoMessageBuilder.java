@@ -20,7 +20,6 @@ import com.apigee.flow.message.Message;
 import com.apigee.flow.message.MessageContext;
 import com.google.apigee.Execute;
 import com.google.protobuf.ByteString;
-
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;

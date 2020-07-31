@@ -14,24 +14,23 @@
 
 package com.google.apigee.ProtoMessageBuilders;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import com.apigee.flow.message.FlowContext;
 import com.apigee.flow.message.Message;
 import com.apigee.flow.message.MessageContext;
 import com.google.apigee.Execute;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 public class MessageContextProtoMessageBuilderTest {
 

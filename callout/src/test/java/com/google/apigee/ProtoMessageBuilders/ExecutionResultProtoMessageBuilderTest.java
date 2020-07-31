@@ -14,25 +14,24 @@
 
 package com.google.apigee.ProtoMessageBuilders;
 
+import static org.junit.Assert.assertEquals;
+
 import com.apigee.flow.execution.Action;
 import com.apigee.flow.execution.ExecutionResult;
 import com.google.apigee.Execute;
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class ExecutionResultProtoMessageBuilderTest {
 
-  private final String KEY1 = "key1";
-  private final String KEY2 = "key2";
-  private final String VAL1 = "val1";
-  private final String VAL2 = "val2";
-  private final String ERROR_RESPONSE = "errorresponse1";
+  private static final String KEY1 = "key1";
+  private static final String KEY2 = "key2";
+  private static final String VAL1 = "val1";
+  private static final String VAL2 = "val2";
+  private static final String ERROR_RESPONSE = "errorresponse1";
 
   @Test
   public void testBuildExecutionResultWithActionContinue() {

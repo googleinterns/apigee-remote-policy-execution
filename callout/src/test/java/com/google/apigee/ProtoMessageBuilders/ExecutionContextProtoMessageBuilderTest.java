@@ -14,52 +14,44 @@
 
 package com.google.apigee.ProtoMessageBuilders;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
+
 import com.apigee.flow.Fault;
 import com.apigee.flow.execution.ExecutionContext;
 import com.google.apigee.Execute;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 public class ExecutionContextProtoMessageBuilderTest {
 
-  private final String ATTRIBUTES_KEY1 = "key1";
-  private final String ATTRIBUTES_KEY2 = "key2";
-  private final String ATTRIBUTES_VALUE1 = "value1";
-  private final String ATTRIBUTES_VALUE2 = "value2";
-  private final String FAULT_NAME = "faultname";
-  private final String FAULT_REASON = "faultreason";
-  private final String FAULT_SUB_CATEGORY = "faultsubcategory";
-  Fault mockFault1 = mock(Fault.class);
-  Fault mockFault2 = mock(Fault.class);
+  private static final String ATTRIBUTES_KEY1 = "key1";
+  private static final String ATTRIBUTES_KEY2 = "key2";
+  private static final String ATTRIBUTES_VALUE1 = "value1";
+  private static final String ATTRIBUTES_VALUE2 = "value2";
+  private static final String FAULT_NAME = "faultname";
+  private static final String FAULT_REASON = "faultreason";
+  private static final String FAULT_SUB_CATEGORY = "faultsubcategory";
+  @Mock private Fault mockFault;
   @Spy private FakeExecutionContext executionContext;
 
   @Before
   public void init() {
     MockitoAnnotations.openMocks(this);
 
-    doReturn(Fault.Category.Messaging).when(mockFault1).getCategory();
-    doReturn(FAULT_NAME).when(mockFault1).getName();
-    doReturn(FAULT_REASON).when(mockFault1).getReason();
-    doReturn(null).when(mockFault1).getAttributes();
-    doReturn(FAULT_SUB_CATEGORY).when(mockFault1).getSubCategory();
-    doReturn(Fault.Category.Step).when(mockFault2).getCategory();
-    doReturn(FAULT_NAME).when(mockFault2).getName();
-    doReturn(FAULT_REASON).when(mockFault2).getReason();
-    doReturn(null).when(mockFault2).getAttributes();
-    doReturn(FAULT_SUB_CATEGORY).when(mockFault2).getSubCategory();
+    doReturn(Fault.Category.Messaging).when(mockFault).getCategory();
+    doReturn(FAULT_NAME).when(mockFault).getName();
+    doReturn(FAULT_REASON).when(mockFault).getReason();
+    doReturn(FAULT_SUB_CATEGORY).when(mockFault).getSubCategory();
 
     executionContext.setRequestFlow(false);
     executionContext.setErrorFlow(false);
@@ -96,7 +88,7 @@ public class ExecutionContextProtoMessageBuilderTest {
   }
 
   @Test
-  public void testBuildExecutionContextProtoFlowTypeBoth() {
+  public void testBuildExecutionContextProtoFlowTypeErrorAndRequest() {
     executionContext.setErrorFlow(true);
     executionContext.setRequestFlow(true);
     Execute.ExecutionContext proto =
@@ -108,7 +100,7 @@ public class ExecutionContextProtoMessageBuilderTest {
 
   @Test
   public void testBuildExecutionContextProtoOneFault() throws Exception {
-    executionContext.addFault(mockFault1);
+    executionContext.addFault(mockFault);
     Execute.ExecutionContext proto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
@@ -124,10 +116,9 @@ public class ExecutionContextProtoMessageBuilderTest {
 
   @Test
   public void testBuildExecutionContextProtoWithMultipleFaults() {
-    executionContext.addFault(mockFault1);
-    executionContext.addFault(mockFault2);
-    doReturn(Fault.Category.Messaging).when(mockFault1).getCategory();
-    doReturn(Fault.Category.Step).when(mockFault2).getCategory();
+    executionContext.addFault(mockFault);
+    executionContext.addFault(mockFault);
+    doReturn(Fault.Category.Messaging).when(mockFault).getCategory();
     Execute.ExecutionContext proto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
@@ -138,7 +129,7 @@ public class ExecutionContextProtoMessageBuilderTest {
     assertEquals(FAULT_NAME, proto.getFaults(0).getName());
     assertEquals(FAULT_REASON, proto.getFaults(0).getReason());
     assertEquals(0, proto.getFaults(0).getAttributesCount());
-    assertEquals(Execute.ExecutionContext.Fault.Category.STEP, proto.getFaults(1).getCategory());
+    assertEquals(Execute.ExecutionContext.Fault.Category.MESSAGING, proto.getFaults(1).getCategory());
     assertEquals(FAULT_SUB_CATEGORY, proto.getFaults(1).getSubCategory());
     assertEquals(FAULT_NAME, proto.getFaults(1).getName());
     assertEquals(FAULT_REASON, proto.getFaults(1).getReason());
@@ -148,8 +139,8 @@ public class ExecutionContextProtoMessageBuilderTest {
 
   @Test
   public void testBuildExecutionContextProtoWithFaultMessaging() {
-    executionContext.addFault(mockFault1);
-    doReturn(Fault.Category.Messaging).when(mockFault1).getCategory();
+    executionContext.addFault(mockFault);
+    doReturn(Fault.Category.Messaging).when(mockFault).getCategory();
     Execute.ExecutionContext proto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
@@ -165,8 +156,8 @@ public class ExecutionContextProtoMessageBuilderTest {
 
   @Test
   public void testBuildExecutionContextProtoWithFaultStep() {
-    executionContext.addFault(mockFault1);
-    doReturn(Fault.Category.Step).when(mockFault1).getCategory();
+    executionContext.addFault(mockFault);
+    doReturn(Fault.Category.Step).when(mockFault).getCategory();
     Execute.ExecutionContext proto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
@@ -181,8 +172,8 @@ public class ExecutionContextProtoMessageBuilderTest {
 
   @Test
   public void testBuildExecutionContextProtoWithFaultTransport() {
-    executionContext.addFault(mockFault1);
-    doReturn(Fault.Category.Transport).when(mockFault1).getCategory();
+    executionContext.addFault(mockFault);
+    doReturn(Fault.Category.Transport).when(mockFault).getCategory();
     Execute.ExecutionContext proto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
@@ -198,8 +189,8 @@ public class ExecutionContextProtoMessageBuilderTest {
 
   @Test
   public void testBuildExecutionContextProtoWithFaultSystem() {
-    executionContext.addFault(mockFault1);
-    doReturn(Fault.Category.System).when(mockFault1).getCategory();
+    executionContext.addFault(mockFault);
+    doReturn(Fault.Category.System).when(mockFault).getCategory();
     Execute.ExecutionContext proto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
@@ -214,12 +205,12 @@ public class ExecutionContextProtoMessageBuilderTest {
 
   @Test
   public void testBuildExecutionContextProtoWithFaultWithAttributes() {
-    executionContext.addFault(mockFault1);
+    executionContext.addFault(mockFault);
     Map<String, Object> attributes = new HashMap<>();
     attributes.put(ATTRIBUTES_KEY1, ATTRIBUTES_VALUE1);
     attributes.put(ATTRIBUTES_KEY2, ATTRIBUTES_VALUE2);
-    doReturn(Fault.Category.Messaging).when(mockFault1).getCategory();
-    doReturn(attributes).when(mockFault1).getAttributes();
+    doReturn(Fault.Category.Messaging).when(mockFault).getCategory();
+    doReturn(attributes).when(mockFault).getAttributes();
     Execute.ExecutionContext proto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
