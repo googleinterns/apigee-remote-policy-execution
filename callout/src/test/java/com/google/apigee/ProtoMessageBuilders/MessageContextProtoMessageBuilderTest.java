@@ -56,7 +56,9 @@ public class MessageContextProtoMessageBuilderTest {
   @Test
   public void testBuildMessageContextWithTargetRequestMessage() throws Exception {
     Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
-    TextFormat.merge("target_request_message {}", expectedProtoBuilder);
+    TextFormat.merge(
+        "target_request_message {}",
+        expectedProtoBuilder);
 
     messageContext.setMessage(FlowContext.TARGET_REQUEST, message);
     Execute.MessageContext actualProto =
@@ -68,7 +70,9 @@ public class MessageContextProtoMessageBuilderTest {
   @Test
   public void testBuildMessageContextWithTargetResponseMessage() throws Exception {
     Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
-    TextFormat.merge("target_response_message {}", expectedProtoBuilder);
+    TextFormat.merge(
+        "target_response_message {}",
+        expectedProtoBuilder);
     messageContext.setMessage(FlowContext.TARGET_RESPONSE, message);
     Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
@@ -79,7 +83,9 @@ public class MessageContextProtoMessageBuilderTest {
   @Test
   public void testBuildMessageContextWithProxyRequestMessage() throws Exception {
     Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
-    TextFormat.merge("proxy_request_message {}", expectedProtoBuilder);
+    TextFormat.merge(
+        "proxy_request_message {}",
+        expectedProtoBuilder);
     messageContext.setMessage(FlowContext.PROXY_REQUEST, message);
     Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
@@ -90,7 +96,9 @@ public class MessageContextProtoMessageBuilderTest {
   @Test
   public void testBuildMessageContextWithProxyResponseMessage() throws Exception {
     Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
-    TextFormat.merge("proxy_response_message {}", expectedProtoBuilder);
+    TextFormat.merge(
+        "proxy_response_message {}",
+        expectedProtoBuilder);
     messageContext.setMessage(FlowContext.PROXY_RESPONSE, message);
     Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
@@ -101,7 +109,9 @@ public class MessageContextProtoMessageBuilderTest {
   @Test
   public void testBuildMessageContextWithErrorMessage() throws Exception {
     Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
-    TextFormat.merge("error_message {}", expectedProtoBuilder);
+    TextFormat.merge(
+        "error_message {}",
+        expectedProtoBuilder);
     messageContext.setErrorMessage(message);
     Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
@@ -115,25 +125,15 @@ public class MessageContextProtoMessageBuilderTest {
     TextFormat.merge(
         "target_request_message {"
             + "    header_map {"
-            + "        key: \""
-            + KEY1
-            + "\""
+            + "        key: \"" + KEY1 + "\""
             + "        value {"
-            + "            headers: [\""
-            + VAL1
-            + "\", \""
-            + VAL2
-            + "\"]"
+            + "            headers: [\"" + VAL1 + "\", \"" + VAL2 + "\"]"
             + "        }"
             + "    }"
             + "    header_map {"
-            + "        key: \""
-            + KEY2
-            + "\""
+            + "        key: \"" + KEY2 + "\""
             + "        value {"
-            + "            headers: [\""
-            + VAL2
-            + "\"]"
+            + "            headers: [\"" + VAL2 + "\"]"
             + "        }"
             + "    }"
             + "}",
@@ -169,25 +169,15 @@ public class MessageContextProtoMessageBuilderTest {
     TextFormat.merge(
         "target_request_message {"
             + "    query_param_map {"
-            + "        key: \""
-            + KEY1
-            + "\""
+            + "        key: \"" + KEY1 + "\""
             + "        value {"
-            + "            query_parameters: [\""
-            + VAL1
-            + "\", \""
-            + VAL2
-            + "\"]"
+            + "            query_parameters: [\"" + VAL1 + "\", \"" + VAL2 + "\"]"
             + "        }"
             + "    }"
             + "    query_param_map {"
-            + "        key: \""
-            + KEY2
-            + "\""
+            + "        key: \"" + KEY2 + "\""
             + "        value {"
-            + "            query_parameters: [\""
-            + VAL2
-            + "\"]"
+            + "            query_parameters: [\"" + VAL2 + "\"]"
             + "        }"
             + "    }"
             + "}",
@@ -207,7 +197,9 @@ public class MessageContextProtoMessageBuilderTest {
   public void testBuildFlowMapValueString() throws Exception {
     Execute.Message.FlowMapValue.Builder expectedProtoBuilder =
         Execute.Message.FlowMapValue.newBuilder();
-    TextFormat.merge("flow_variable: \"" + VAL1 + "\"", expectedProtoBuilder);
+    TextFormat.merge(
+        "flow_variable: \"" + VAL1 + "\"",
+        expectedProtoBuilder);
 
     Execute.Message.FlowMapValue actualProto =
         MessageContextProtoMessageBuilder.buildFlowMapValue(VAL1);

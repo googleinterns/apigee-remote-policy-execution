@@ -107,15 +107,9 @@ public class ExecutionContextProtoMessageBuilderTest {
     TextFormat.merge(
         "faults {"
             + "  category: MESSAGING"
-            + "  sub_category: \""
-            + FAULT_SUB_CATEGORY
-            + "\""
-            + "  name: \""
-            + FAULT_NAME
-            + "\""
-            + "  reason: \""
-            + FAULT_REASON
-            + "\""
+            + "  sub_category: \"" + FAULT_SUB_CATEGORY + "\""
+            + "  name: \"" + FAULT_NAME + "\""
+            + "  reason: \"" + FAULT_REASON + "\""
             + "}",
         expectedProtoBuilder);
     executionContext.addFault(mockFault);
@@ -131,27 +125,15 @@ public class ExecutionContextProtoMessageBuilderTest {
     TextFormat.merge(
         "faults {"
             + "  category: MESSAGING"
-            + "  sub_category: \""
-            + FAULT_SUB_CATEGORY
-            + "\""
-            + "  name: \""
-            + FAULT_NAME
-            + "\""
-            + "  reason: \""
-            + FAULT_REASON
-            + "\""
+            + "  sub_category: \"" + FAULT_SUB_CATEGORY + "\""
+            + "  name: \"" + FAULT_NAME + "\""
+            + "  reason: \"" + FAULT_REASON + "\""
             + "}"
             + "faults {"
             + "  category: MESSAGING"
-            + "  sub_category: \""
-            + FAULT_SUB_CATEGORY
-            + "\""
-            + "  name: \""
-            + FAULT_NAME
-            + "\""
-            + "  reason: \""
-            + FAULT_REASON
-            + "\""
+            + "  sub_category: \"" + FAULT_SUB_CATEGORY + "\""
+            + "  name: \"" + FAULT_NAME + "\""
+            + "  reason: \"" + FAULT_REASON + "\""
             + "}",
         expectedProtoBuilder);
     executionContext.addFault(mockFault);
@@ -168,15 +150,9 @@ public class ExecutionContextProtoMessageBuilderTest {
     TextFormat.merge(
         "faults {"
             + "  category: MESSAGING"
-            + "  sub_category: \""
-            + FAULT_SUB_CATEGORY
-            + "\""
-            + "  name: \""
-            + FAULT_NAME
-            + "\""
-            + "  reason: \""
-            + FAULT_REASON
-            + "\""
+            + "  sub_category: \"" + FAULT_SUB_CATEGORY + "\""
+            + "  name: \"" + FAULT_NAME + "\""
+            + "  reason: \"" + FAULT_REASON + "\""
             + "}",
         expectedProtoBuilder);
     executionContext.addFault(mockFault);
@@ -193,15 +169,9 @@ public class ExecutionContextProtoMessageBuilderTest {
     TextFormat.merge(
         "faults {"
             + "  category: STEP"
-            + "  sub_category: \""
-            + FAULT_SUB_CATEGORY
-            + "\""
-            + "  name: \""
-            + FAULT_NAME
-            + "\""
-            + "  reason: \""
-            + FAULT_REASON
-            + "\""
+            + "  sub_category: \"" + FAULT_SUB_CATEGORY + "\""
+            + "  name: \"" + FAULT_NAME + "\""
+            + "  reason: \"" + FAULT_REASON + "\""
             + "}",
         expectedProtoBuilder);
     executionContext.addFault(mockFault);
@@ -218,15 +188,9 @@ public class ExecutionContextProtoMessageBuilderTest {
     TextFormat.merge(
         "faults {"
             + "  category: TRANSPORT"
-            + "  sub_category: \""
-            + FAULT_SUB_CATEGORY
-            + "\""
-            + "  name: \""
-            + FAULT_NAME
-            + "\""
-            + "  reason: \""
-            + FAULT_REASON
-            + "\""
+            + "  sub_category: \"" + FAULT_SUB_CATEGORY + "\""
+            + "  name: \"" + FAULT_NAME + "\""
+            + "  reason: \"" + FAULT_REASON + "\""
             + "}",
         expectedProtoBuilder);
     executionContext.addFault(mockFault);
@@ -243,15 +207,9 @@ public class ExecutionContextProtoMessageBuilderTest {
     TextFormat.merge(
         "faults {"
             + "  category: SYSTEM"
-            + "  sub_category: \""
-            + FAULT_SUB_CATEGORY
-            + "\""
-            + "  name: \""
-            + FAULT_NAME
-            + "\""
-            + "  reason: \""
-            + FAULT_REASON
-            + "\""
+            + "  sub_category: \"" + FAULT_SUB_CATEGORY + "\""
+            + "  name: \"" + FAULT_NAME + "\""
+            + "  reason: \"" + FAULT_REASON + "\""
             + "}",
         expectedProtoBuilder);
     executionContext.addFault(mockFault);
@@ -266,32 +224,18 @@ public class ExecutionContextProtoMessageBuilderTest {
   public void testBuildExecutionContextProtoWithFaultWithAttributes() throws Exception {
     Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
     TextFormat.merge(
-        "faults {\n"
+        "faults {"
             + "  category: MESSAGING"
-            + "  sub_category: \""
-            + FAULT_SUB_CATEGORY
-            + "\""
-            + "  name: \""
-            + FAULT_NAME
-            + "\""
-            + "  reason: \""
-            + FAULT_REASON
-            + "\""
+            + "  sub_category: \"" + FAULT_SUB_CATEGORY + "\""
+            + "  name: \"" + FAULT_NAME + "\""
+            + "  reason: \"" + FAULT_REASON + "\""
             + "  attributes {"
-            + "    key: \""
-            + ATTRIBUTES_KEY1
-            + "\""
-            + "    value: \""
-            + ATTRIBUTES_VALUE1
-            + "\""
+            + "    key: \"" + ATTRIBUTES_KEY1 + "\""
+            + "    value: \"" + ATTRIBUTES_VALUE1 + "\""
             + "  }"
             + "  attributes {"
-            + "    key: \""
-            + ATTRIBUTES_KEY2
-            + "\""
-            + "    value: \""
-            + ATTRIBUTES_VALUE2
-            + "\""
+            + "    key: \"" + ATTRIBUTES_KEY2 + "\""
+            + "    value: \"" + ATTRIBUTES_VALUE2 + "\""
             + "  }"
             + "}",
         expectedProtoBuilder);

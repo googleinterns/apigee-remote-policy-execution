@@ -46,7 +46,9 @@ public class ExecutionResultProtoMessageBuilderTest {
   @Test
   public void testBuildExecutionResultWithActionPause() throws Exception {
     Execute.ExecutionResult.Builder expectedProtoBuilder = Execute.ExecutionResult.newBuilder();
-    TextFormat.merge("action: PAUSE", expectedProtoBuilder);
+    TextFormat.merge(
+        "action: PAUSE",
+        expectedProtoBuilder);
     Execute.ExecutionResult actualProto =
         ExecutionResultProtoMessageBuilder.buildExecutionResultMessage(ExecutionResult.PAUSE);
 
@@ -56,7 +58,9 @@ public class ExecutionResultProtoMessageBuilderTest {
   @Test
   public void testBuildExecutionResultWithActionAbort() throws Exception {
     Execute.ExecutionResult.Builder expectedProtoBuilder = Execute.ExecutionResult.newBuilder();
-    TextFormat.merge("action: ABORT", expectedProtoBuilder);
+    TextFormat.merge(
+        "action: ABORT",
+        expectedProtoBuilder);
     Execute.ExecutionResult actualProto =
         ExecutionResultProtoMessageBuilder.buildExecutionResultMessage(ExecutionResult.ABORT);
 
@@ -69,20 +73,12 @@ public class ExecutionResultProtoMessageBuilderTest {
     TextFormat.merge(
         "action: CONTINUE\n"
             + "properties {"
-            + "  key: \""
-            + KEY1
-            + "\""
-            + "  value: \""
-            + VAL1
-            + "\""
+            + "  key: \"" + KEY1 + "\""
+            + "  value: \"" + VAL1 + "\""
             + "}"
             + "properties {"
-            + "  key: \""
-            + KEY2
-            + "\""
-            + "  value: \""
-            + VAL2
-            + "\""
+            + "  key: \"" + KEY2 + "\""
+            + "  value: \"" + VAL2 + "\""
             + "}",
         expectedProtoBuilder);
     ExecutionResult executionResult = new ExecutionResult(true, Action.CONTINUE);
@@ -102,20 +98,12 @@ public class ExecutionResultProtoMessageBuilderTest {
     TextFormat.merge(
         "action: CONTINUE\n"
             + "error_response_headers {"
-            + "  key: \""
-            + KEY1
-            + "\""
-            + "  value: \""
-            + VAL1
-            + "\""
+            + "  key: \"" + KEY1 + "\""
+            + "  value: \"" + VAL1 + "\""
             + "}"
             + "error_response_headers {"
-            + "  key: \""
-            + KEY2
-            + "\""
-            + "  value: \""
-            + VAL2
-            + "\""
+            + "  key: \"" + KEY2 + "\""
+            + "  value: \"" + VAL2 + "\""
             + "}",
         expectedProtoBuilder);
     ExecutionResult executionResult = new ExecutionResult(true, Action.CONTINUE);
@@ -133,7 +121,9 @@ public class ExecutionResultProtoMessageBuilderTest {
   public void testBuildExecutionResultWithErrorResponse() throws Exception {
     Execute.ExecutionResult.Builder expectedProtoBuilder = Execute.ExecutionResult.newBuilder();
     TextFormat.merge(
-        "action: CONTINUE\n" + "error_response: \"" + ERROR_RESPONSE + "\"", expectedProtoBuilder);
+        "action: CONTINUE\n"
+            + "error_response: \"" + ERROR_RESPONSE + "\"",
+        expectedProtoBuilder);
     ExecutionResult executionResult = new ExecutionResult(true, Action.CONTINUE);
     executionResult.setErrorResponse(ERROR_RESPONSE);
     Execute.ExecutionResult actualProto =
