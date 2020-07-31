@@ -19,10 +19,10 @@ import static org.junit.Assert.assertEquals;
 import com.apigee.flow.execution.Action;
 import com.apigee.flow.execution.ExecutionResult;
 import com.google.apigee.Execute;
+import com.google.protobuf.TextFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 import org.junit.Test;
 
 public class ExecutionResultProtoMessageBuilderTest {
@@ -34,70 +34,111 @@ public class ExecutionResultProtoMessageBuilderTest {
   private static final String ERROR_RESPONSE = "errorresponse1";
 
   @Test
-  public void testBuildExecutionResultWithActionContinue() {
-    Execute.ExecutionResult proto =
+  public void testBuildExecutionResultWithActionContinue() throws Exception {
+    Execute.ExecutionResult.Builder expectedProtoBuilder = Execute.ExecutionResult.newBuilder();
+    TextFormat.merge("action: CONTINUE", expectedProtoBuilder);
+    Execute.ExecutionResult actualProto =
         ExecutionResultProtoMessageBuilder.buildExecutionResultMessage(ExecutionResult.SUCCESS);
 
-    assertEquals(Execute.ExecutionResult.Action.CONTINUE, proto.getAction());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionResultWithActionPause() {
-    Execute.ExecutionResult proto =
+  public void testBuildExecutionResultWithActionPause() throws Exception {
+    Execute.ExecutionResult.Builder expectedProtoBuilder = Execute.ExecutionResult.newBuilder();
+    TextFormat.merge("action: PAUSE", expectedProtoBuilder);
+    Execute.ExecutionResult actualProto =
         ExecutionResultProtoMessageBuilder.buildExecutionResultMessage(ExecutionResult.PAUSE);
 
-    assertEquals(Execute.ExecutionResult.Action.PAUSE, proto.getAction());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionResultWithActionAbort() {
-    Execute.ExecutionResult proto =
+  public void testBuildExecutionResultWithActionAbort() throws Exception {
+    Execute.ExecutionResult.Builder expectedProtoBuilder = Execute.ExecutionResult.newBuilder();
+    TextFormat.merge("action: ABORT", expectedProtoBuilder);
+    Execute.ExecutionResult actualProto =
         ExecutionResultProtoMessageBuilder.buildExecutionResultMessage(ExecutionResult.ABORT);
 
-    assertEquals(Execute.ExecutionResult.Action.ABORT, proto.getAction());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionResultWithProperties() {
+  public void testBuildExecutionResultWithProperties() throws Exception {
+    Execute.ExecutionResult.Builder expectedProtoBuilder = Execute.ExecutionResult.newBuilder();
+    TextFormat.merge(
+        "action: CONTINUE\n"
+            + "properties {"
+            + "  key: \""
+            + KEY1
+            + "\""
+            + "  value: \""
+            + VAL1
+            + "\""
+            + "}"
+            + "properties {"
+            + "  key: \""
+            + KEY2
+            + "\""
+            + "  value: \""
+            + VAL2
+            + "\""
+            + "}",
+        expectedProtoBuilder);
     ExecutionResult executionResult = new ExecutionResult(true, Action.CONTINUE);
     Properties properties = new Properties();
     properties.put(KEY1, VAL1);
     properties.put(KEY2, VAL2);
     executionResult.setProperties(properties);
-    Execute.ExecutionResult proto =
+    Execute.ExecutionResult actualProto =
         ExecutionResultProtoMessageBuilder.buildExecutionResultMessage(executionResult);
 
-    assertEquals(Execute.ExecutionResult.Action.CONTINUE, proto.getAction());
-    assertEquals(2, proto.getPropertiesCount());
-    assertEquals(
-        properties.entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().toString())),
-        proto.getPropertiesMap());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionResultWithErrorResponseHeaders() {
+  public void testBuildExecutionResultWithErrorResponseHeaders() throws Exception {
+    Execute.ExecutionResult.Builder expectedProtoBuilder = Execute.ExecutionResult.newBuilder();
+    TextFormat.merge(
+        "action: CONTINUE\n"
+            + "error_response_headers {"
+            + "  key: \""
+            + KEY1
+            + "\""
+            + "  value: \""
+            + VAL1
+            + "\""
+            + "}"
+            + "error_response_headers {"
+            + "  key: \""
+            + KEY2
+            + "\""
+            + "  value: \""
+            + VAL2
+            + "\""
+            + "}",
+        expectedProtoBuilder);
     ExecutionResult executionResult = new ExecutionResult(true, Action.CONTINUE);
     Map<String, String> errorResponseHeaders = new HashMap<>();
     errorResponseHeaders.put(KEY1, VAL1);
     errorResponseHeaders.put(KEY2, VAL2);
     executionResult.setErrorResponseHeaders(errorResponseHeaders);
-    Execute.ExecutionResult proto =
+    Execute.ExecutionResult actualProto =
         ExecutionResultProtoMessageBuilder.buildExecutionResultMessage(executionResult);
 
-    assertEquals(Execute.ExecutionResult.Action.CONTINUE, proto.getAction());
-    assertEquals(2, proto.getErrorResponseHeadersCount());
-    assertEquals(errorResponseHeaders, proto.getErrorResponseHeadersMap());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionResultWithErrorResponse() {
+  public void testBuildExecutionResultWithErrorResponse() throws Exception {
+    Execute.ExecutionResult.Builder expectedProtoBuilder = Execute.ExecutionResult.newBuilder();
+    TextFormat.merge(
+        "action: CONTINUE\n" + "error_response: \"" + ERROR_RESPONSE + "\"", expectedProtoBuilder);
     ExecutionResult executionResult = new ExecutionResult(true, Action.CONTINUE);
     executionResult.setErrorResponse(ERROR_RESPONSE);
-    Execute.ExecutionResult proto =
+    Execute.ExecutionResult actualProto =
         ExecutionResultProtoMessageBuilder.buildExecutionResultMessage(executionResult);
 
-    assertEquals(Execute.ExecutionResult.Action.CONTINUE, proto.getAction());
-    assertEquals(ERROR_RESPONSE, proto.getErrorResponse());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 }

@@ -15,13 +15,13 @@
 package com.google.apigee.ProtoMessageBuilders;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
+import com.apigee.flow.FlowInfo;
 import com.apigee.flow.message.FlowContext;
 import com.apigee.flow.message.Message;
 import com.apigee.flow.message.MessageContext;
 import com.google.apigee.Execute;
+import com.google.protobuf.TextFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +35,7 @@ import org.mockito.Spy;
 public class MessageContextProtoMessageBuilderTest {
 
   private final String CONTENT = "content1";
+  private final String FLOW_INFO_IDENTIFIER = "identifier";
   private final String KEY1 = "key1";
   private final String KEY2 = "key2";
   private final String VAL1 = "val1";
@@ -42,6 +43,7 @@ public class MessageContextProtoMessageBuilderTest {
 
   @Spy private FakeMessageContext messageContext;
   @Spy private FakeMessage message;
+  @Spy private FakeFlowInfo flowInfo;
 
   @Before
   public void init() {
@@ -52,136 +54,185 @@ public class MessageContextProtoMessageBuilderTest {
   }
 
   @Test
-  public void testBuildMessageContextWithTargetRequestMessage() {
+  public void testBuildMessageContextWithTargetRequestMessage() throws Exception {
+    Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
+    TextFormat.merge("target_request_message {}", expectedProtoBuilder);
+
     messageContext.setMessage(FlowContext.TARGET_REQUEST, message);
-    Execute.MessageContext proto =
+    Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
 
-    assertTrue(proto.hasTargetRequestMessage());
-    assertFalse(proto.hasTargetResponseMessage());
-    assertFalse(proto.hasProxyRequestMessage());
-    assertFalse(proto.hasProxyResponseMessage());
-    assertFalse(proto.hasErrorMessage());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildMessageContextWithTargetResponseMessage() {
+  public void testBuildMessageContextWithTargetResponseMessage() throws Exception {
+    Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
+    TextFormat.merge("target_response_message {}", expectedProtoBuilder);
     messageContext.setMessage(FlowContext.TARGET_RESPONSE, message);
-    Execute.MessageContext proto =
+    Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
 
-    assertTrue(proto.hasTargetResponseMessage());
-    assertFalse(proto.hasTargetRequestMessage());
-    assertFalse(proto.hasProxyRequestMessage());
-    assertFalse(proto.hasProxyResponseMessage());
-    assertFalse(proto.hasErrorMessage());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildMessageContextWithProxyRequestMessage() {
+  public void testBuildMessageContextWithProxyRequestMessage() throws Exception {
+    Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
+    TextFormat.merge("proxy_request_message {}", expectedProtoBuilder);
     messageContext.setMessage(FlowContext.PROXY_REQUEST, message);
-    Execute.MessageContext proto =
+    Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
 
-    assertTrue(proto.hasProxyRequestMessage());
-    assertFalse(proto.hasTargetResponseMessage());
-    assertFalse(proto.hasTargetRequestMessage());
-    assertFalse(proto.hasProxyResponseMessage());
-    assertFalse(proto.hasErrorMessage());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildMessageContextWithProxyResponseMessage() {
+  public void testBuildMessageContextWithProxyResponseMessage() throws Exception {
+    Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
+    TextFormat.merge("proxy_response_message {}", expectedProtoBuilder);
     messageContext.setMessage(FlowContext.PROXY_RESPONSE, message);
-    Execute.MessageContext proto =
+    Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
 
-    assertTrue(proto.hasProxyResponseMessage());
-    assertFalse(proto.hasTargetResponseMessage());
-    assertFalse(proto.hasProxyRequestMessage());
-    assertFalse(proto.hasTargetRequestMessage());
-    assertFalse(proto.hasErrorMessage());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildMessageContextWithErrorMessage() {
+  public void testBuildMessageContextWithErrorMessage() throws Exception {
+    Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
+    TextFormat.merge("error_message {}", expectedProtoBuilder);
     messageContext.setErrorMessage(message);
-    Execute.MessageContext proto =
+    Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
 
-    assertTrue(proto.hasErrorMessage());
-    assertFalse(proto.hasTargetResponseMessage());
-    assertFalse(proto.hasProxyRequestMessage());
-    assertFalse(proto.hasTargetRequestMessage());
-    assertFalse(proto.hasProxyResponseMessage());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildMessageWithHeaderMap() {
+  public void testBuildMessageWithHeaderMap() throws Exception {
+    Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
+    TextFormat.merge(
+        "target_request_message {"
+            + "    header_map {"
+            + "        key: \""
+            + KEY1
+            + "\""
+            + "        value {"
+            + "            headers: [\""
+            + VAL1
+            + "\", \""
+            + VAL2
+            + "\"]"
+            + "        }"
+            + "    }"
+            + "    header_map {"
+            + "        key: \""
+            + KEY2
+            + "\""
+            + "        value {"
+            + "            headers: [\""
+            + VAL2
+            + "\"]"
+            + "        }"
+            + "    }"
+            + "}",
+        expectedProtoBuilder);
+
     message.setHeader(KEY1, VAL1);
     message.setHeader(KEY1, VAL2);
     message.setHeader(KEY2, VAL2);
     messageContext.setMessage(FlowContext.TARGET_REQUEST, message);
-    Execute.MessageContext proto =
+    Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
 
-    assertTrue(proto.hasTargetRequestMessage());
-    assertEquals(2, proto.getTargetRequestMessage().getHeaderMapCount());
-    assertEquals(buildHeadersMap(message), proto.getTargetRequestMessage().getHeaderMapMap());
-  }
-
-  private Map<String, Execute.Message.Headers> buildHeadersMap(Message message) {
-    Map<String, Execute.Message.Headers> headerMap = new HashMap<>();
-    message
-        .getHeaderNames()
-        .forEach(
-            headerName ->
-                headerMap.put(
-                    headerName,
-                    Execute.Message.Headers.newBuilder()
-                        .addAllHeaders(message.getHeaders(headerName))
-                        .build()));
-    return headerMap;
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildMessageWithContent() {
+  public void testBuildMessageWithContent() throws Exception {
+    Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
+    TextFormat.merge(
+        "target_request_message {" + "    content: \"" + CONTENT + "\"" + "}",
+        expectedProtoBuilder);
     message.setContent(CONTENT);
     messageContext.setMessage(FlowContext.TARGET_REQUEST, message);
-    Execute.MessageContext proto =
+    Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
 
-    assertTrue(proto.hasTargetRequestMessage());
-    assertEquals(CONTENT, proto.getTargetRequestMessage().getContent().toStringUtf8());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildMessageWithQueryParamMap() {
+  public void testBuildMessageWithQueryParamMap() throws Exception {
+    Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
+    TextFormat.merge(
+        "target_request_message {"
+            + "    query_param_map {"
+            + "        key: \""
+            + KEY1
+            + "\""
+            + "        value {"
+            + "            query_parameters: [\""
+            + VAL1
+            + "\", \""
+            + VAL2
+            + "\"]"
+            + "        }"
+            + "    }"
+            + "    query_param_map {"
+            + "        key: \""
+            + KEY2
+            + "\""
+            + "        value {"
+            + "            query_parameters: [\""
+            + VAL2
+            + "\"]"
+            + "        }"
+            + "    }"
+            + "}",
+        expectedProtoBuilder);
+
     message.setQueryParam(KEY1, VAL1);
     message.setQueryParam(KEY1, VAL2);
     message.setQueryParam(KEY2, VAL2);
     messageContext.setMessage(FlowContext.TARGET_REQUEST, message);
-    Execute.MessageContext proto =
+    Execute.MessageContext actualProto =
         MessageContextProtoMessageBuilder.buildMessageContextProto(messageContext);
 
-    assertTrue(proto.hasTargetRequestMessage());
-    assertEquals(2, proto.getTargetRequestMessage().getQueryParamMapCount());
-    assertEquals(
-        buildQueryParametersMap(message), proto.getTargetRequestMessage().getQueryParamMapMap());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
-  private Map<String, Execute.Message.QueryParameters> buildQueryParametersMap(Message message) {
-    Map<String, Execute.Message.QueryParameters> queryParametersMap = new HashMap<>();
-    message
-        .getQueryParamNames()
-        .forEach(
-            queryParamName ->
-                queryParametersMap.put(
-                    queryParamName,
-                    Execute.Message.QueryParameters.newBuilder()
-                        .addAllQueryParameters(message.getQueryParams(queryParamName))
-                        .build()));
-    return queryParametersMap;
+  @Test
+  public void testBuildFlowMapValueString() throws Exception {
+    Execute.Message.FlowMapValue.Builder expectedProtoBuilder =
+        Execute.Message.FlowMapValue.newBuilder();
+    TextFormat.merge("flow_variable: \"" + VAL1 + "\"", expectedProtoBuilder);
+
+    Execute.Message.FlowMapValue actualProto =
+        MessageContextProtoMessageBuilder.buildFlowMapValue(VAL1);
+
+    assertEquals(expectedProtoBuilder.build(), actualProto);
+  }
+
+  @Test
+  public void testBuildFlowMapValueFlowInfo() throws Exception {
+    flowInfo.setIdentifier(FLOW_INFO_IDENTIFIER);
+    Execute.Message.FlowMapValue.Builder expectedProtoBuilder =
+        Execute.Message.FlowMapValue.newBuilder();
+    TextFormat.merge(
+        "flow_info {" + "    identifier: \"" + FLOW_INFO_IDENTIFIER + "\"" + "}",
+        expectedProtoBuilder);
+
+    Execute.Message.FlowMapValue actualProto =
+        MessageContextProtoMessageBuilder.buildFlowMapValue(flowInfo);
+
+    assertEquals(expectedProtoBuilder.build(), actualProto);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildFlowMapValueIllegalArgument() {
+    MessageContextProtoMessageBuilder.buildFlowMapValue(0);
   }
 
   abstract static class FakeMessageContext implements MessageContext {
@@ -192,8 +243,8 @@ public class MessageContextProtoMessageBuilderTest {
     private Message errorMessage;
 
     @Override
-    public Message getMessage(FlowContext var1) {
-      switch (var1) {
+    public Message getMessage(FlowContext flowContext) {
+      switch (flowContext) {
         case PROXY_REQUEST:
           return this.proxyRequestMessage;
         case TARGET_REQUEST:
@@ -208,19 +259,19 @@ public class MessageContextProtoMessageBuilderTest {
     }
 
     @Override
-    public void setMessage(FlowContext var1, Message var2) {
-      switch (var1) {
+    public void setMessage(FlowContext flowContext, Message message) {
+      switch (flowContext) {
         case PROXY_REQUEST:
-          this.proxyRequestMessage = var2;
+          this.proxyRequestMessage = message;
           break;
         case TARGET_REQUEST:
-          this.targetRequestMessage = var2;
+          this.targetRequestMessage = message;
           break;
         case TARGET_RESPONSE:
-          this.targetResponseMessage = var2;
+          this.targetResponseMessage = message;
           break;
         case PROXY_RESPONSE:
-          this.proxyResponseMessage = var2;
+          this.proxyResponseMessage = message;
       }
     }
 
@@ -230,8 +281,8 @@ public class MessageContextProtoMessageBuilderTest {
     }
 
     @Override
-    public void setErrorMessage(Message var1) {
-      this.errorMessage = var1;
+    public void setErrorMessage(Message message) {
+      this.errorMessage = message;
     }
 
     public void clearAll() {
@@ -244,10 +295,10 @@ public class MessageContextProtoMessageBuilderTest {
 
   abstract static class FakeMessage implements Message {
 
-    String content;
-    Map<String, List<String>> headers;
-    Map<String, List<String>> queryParams;
-    Map<String, Object> variables;
+    private String content;
+    private Map<String, List<String>> headers;
+    private Map<String, List<String>> queryParams;
+    private Map<String, Object> variables;
 
     @Override
     public Set<String> getHeaderNames() {
@@ -258,20 +309,20 @@ public class MessageContextProtoMessageBuilderTest {
     }
 
     @Override
-    public List<String> getHeaders(String var1) {
+    public List<String> getHeaders(String headerName) {
       if (headers == null) {
         return null;
       }
-      return headers.getOrDefault(var1, null);
+      return headers.getOrDefault(headerName, null);
     }
 
     @Override
-    public boolean setHeader(String var1, Object var2) {
+    public boolean setHeader(String headerName, Object headerValue) {
       if (headers == null) {
         headers = new HashMap<>();
       }
-      headers.putIfAbsent(var1, new ArrayList<>());
-      headers.get(var1).add((String) var2);
+      headers.putIfAbsent(headerName, new ArrayList<>());
+      headers.get(headerName).add((String) headerValue);
       return true;
     }
 
@@ -281,24 +332,24 @@ public class MessageContextProtoMessageBuilderTest {
     }
 
     @Override
-    public void setContent(String var1) {
-      content = var1;
+    public void setContent(String content) {
+      this.content = content;
     }
 
     @Override
-    public Object getVariable(String var1) {
+    public Object getVariable(String key) {
       if (variables == null) {
         return null;
       }
-      return variables.getOrDefault(var1, null);
+      return variables.getOrDefault(key, null);
     }
 
     @Override
-    public boolean setVariable(String var1, Object var2) {
+    public boolean setVariable(String key, Object value) {
       if (variables == null) {
         variables = new HashMap<>();
       }
-      variables.put(var1, var2);
+      variables.put(key, value);
       return true;
     }
 
@@ -311,20 +362,20 @@ public class MessageContextProtoMessageBuilderTest {
     }
 
     @Override
-    public List<String> getQueryParams(String var1) {
+    public List<String> getQueryParams(String queryParamName) {
       if (queryParams == null) {
         return null;
       }
-      return queryParams.getOrDefault(var1, null);
+      return queryParams.getOrDefault(queryParamName, null);
     }
 
     @Override
-    public boolean setQueryParam(String var1, Object var2) {
+    public boolean setQueryParam(String queryParamName, Object queryParam) {
       if (queryParams == null) {
         queryParams = new HashMap<>();
       }
-      queryParams.putIfAbsent(var1, new ArrayList<>());
-      queryParams.get(var1).add((String) var2);
+      queryParams.putIfAbsent(queryParamName, new ArrayList<>());
+      queryParams.get(queryParamName).add((String) queryParam);
       return true;
     }
 
@@ -339,6 +390,19 @@ public class MessageContextProtoMessageBuilderTest {
         variables.clear();
       }
       content = null;
+    }
+  }
+
+  abstract static class FakeFlowInfo implements FlowInfo {
+    private String identifier;
+
+    @Override
+    public String getIdentifier() {
+      return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+      this.identifier = identifier;
     }
   }
 }

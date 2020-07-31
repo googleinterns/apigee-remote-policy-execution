@@ -82,13 +82,14 @@ public class MessageContextProtoMessageBuilder {
   }
 
   /**
-   * Builds the FlowMapValue for the Flow Variable map in the Message Protocol Buffer Message.
+   * Builds the FlowMapValue for the Flow Variable map in the Message Protocol Buffer Message. Not
+   * currently used as variable map within {@link Message} cannot be extracted.
    *
    * @param value Either a String or FlowInfo object to store in the Flow Variable map.
    * @return FlowMapValue to be stored in the Flow Variable map in the Message Protocol Buffer
    *     Message.
    */
-  private static Execute.Message.FlowMapValue buildFlowMapValue(Object value) {
+  public static Execute.Message.FlowMapValue buildFlowMapValue(Object value) {
     if (!(value instanceof FlowInfo) && !(value instanceof String)) {
       throw new IllegalArgumentException();
     }

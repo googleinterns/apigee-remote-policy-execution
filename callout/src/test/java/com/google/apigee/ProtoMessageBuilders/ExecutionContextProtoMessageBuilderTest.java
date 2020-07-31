@@ -20,12 +20,12 @@ import static org.mockito.Mockito.doReturn;
 import com.apigee.flow.Fault;
 import com.apigee.flow.execution.ExecutionContext;
 import com.google.apigee.Execute;
+import com.google.protobuf.TextFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -60,172 +60,250 @@ public class ExecutionContextProtoMessageBuilderTest {
 
   @Test
   public void testBuildExecutionContextProtoDefault() {
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(0, proto.getFaultsCount());
-    assertEquals(Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionContextProtoFlowTypeRequest() {
+  public void testBuildExecutionContextProtoFlowTypeRequest() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge("flow_type: REQUEST", expectedProtoBuilder);
     executionContext.setRequestFlow(true);
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(0, proto.getFaultsCount());
-    assertEquals(Execute.ExecutionContext.FlowType.REQUEST, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionContextProtoFlowTypeError() {
+  public void testBuildExecutionContextProtoFlowTypeError() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge("flow_type: ERROR", expectedProtoBuilder);
     executionContext.setErrorFlow(true);
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(0, proto.getFaultsCount());
-    assertEquals(Execute.ExecutionContext.FlowType.ERROR, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionContextProtoFlowTypeErrorAndRequest() {
+  public void testBuildExecutionContextProtoFlowTypeErrorAndRequest() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge("flow_type: ERROR", expectedProtoBuilder);
     executionContext.setErrorFlow(true);
     executionContext.setRequestFlow(true);
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(0, proto.getFaultsCount());
-    assertEquals(Execute.ExecutionContext.FlowType.ERROR, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
   public void testBuildExecutionContextProtoOneFault() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge(
+        "faults {"
+            + "  category: MESSAGING"
+            + "  sub_category: \""
+            + FAULT_SUB_CATEGORY
+            + "\""
+            + "  name: \""
+            + FAULT_NAME
+            + "\""
+            + "  reason: \""
+            + FAULT_REASON
+            + "\""
+            + "}",
+        expectedProtoBuilder);
     executionContext.addFault(mockFault);
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(1, proto.getFaultsCount());
-    assertEquals(
-        Execute.ExecutionContext.Fault.Category.MESSAGING, proto.getFaults(0).getCategory());
-    assertEquals(FAULT_SUB_CATEGORY, proto.getFaults(0).getSubCategory());
-    assertEquals(FAULT_NAME, proto.getFaults(0).getName());
-    assertEquals(FAULT_REASON, proto.getFaults(0).getReason());
-    assertEquals(0, proto.getFaults(0).getAttributesCount());
-    assertEquals(Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionContextProtoWithMultipleFaults() {
+  public void testBuildExecutionContextProtoWithMultipleFaults() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge(
+        "faults {"
+            + "  category: MESSAGING"
+            + "  sub_category: \""
+            + FAULT_SUB_CATEGORY
+            + "\""
+            + "  name: \""
+            + FAULT_NAME
+            + "\""
+            + "  reason: \""
+            + FAULT_REASON
+            + "\""
+            + "}"
+            + "faults {"
+            + "  category: MESSAGING"
+            + "  sub_category: \""
+            + FAULT_SUB_CATEGORY
+            + "\""
+            + "  name: \""
+            + FAULT_NAME
+            + "\""
+            + "  reason: \""
+            + FAULT_REASON
+            + "\""
+            + "}",
+        expectedProtoBuilder);
     executionContext.addFault(mockFault);
+    executionContext.addFault(mockFault);
+    Execute.ExecutionContext actualProto =
+        ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
+
+    assertEquals(expectedProtoBuilder.build(), actualProto);
+  }
+
+  @Test
+  public void testBuildExecutionContextProtoWithFaultMessaging() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge(
+        "faults {"
+            + "  category: MESSAGING"
+            + "  sub_category: \""
+            + FAULT_SUB_CATEGORY
+            + "\""
+            + "  name: \""
+            + FAULT_NAME
+            + "\""
+            + "  reason: \""
+            + FAULT_REASON
+            + "\""
+            + "}",
+        expectedProtoBuilder);
     executionContext.addFault(mockFault);
     doReturn(Fault.Category.Messaging).when(mockFault).getCategory();
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(2, proto.getFaultsCount());
-    assertEquals(
-        Execute.ExecutionContext.Fault.Category.MESSAGING, proto.getFaults(0).getCategory());
-    assertEquals(FAULT_SUB_CATEGORY, proto.getFaults(0).getSubCategory());
-    assertEquals(FAULT_NAME, proto.getFaults(0).getName());
-    assertEquals(FAULT_REASON, proto.getFaults(0).getReason());
-    assertEquals(0, proto.getFaults(0).getAttributesCount());
-    assertEquals(Execute.ExecutionContext.Fault.Category.MESSAGING, proto.getFaults(1).getCategory());
-    assertEquals(FAULT_SUB_CATEGORY, proto.getFaults(1).getSubCategory());
-    assertEquals(FAULT_NAME, proto.getFaults(1).getName());
-    assertEquals(FAULT_REASON, proto.getFaults(1).getReason());
-    assertEquals(0, proto.getFaults(1).getAttributesCount());
-    assertEquals(Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionContextProtoWithFaultMessaging() {
-    executionContext.addFault(mockFault);
-    doReturn(Fault.Category.Messaging).when(mockFault).getCategory();
-    Execute.ExecutionContext proto =
-        ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
-
-    assertEquals(1, proto.getFaultsCount());
-    assertEquals(
-        Execute.ExecutionContext.Fault.Category.MESSAGING, proto.getFaults(0).getCategory());
-    assertEquals(FAULT_SUB_CATEGORY, proto.getFaults(0).getSubCategory());
-    assertEquals(FAULT_NAME, proto.getFaults(0).getName());
-    assertEquals(FAULT_REASON, proto.getFaults(0).getReason());
-    assertEquals(0, proto.getFaults(0).getAttributesCount());
-    assertEquals(Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE, proto.getFlowType());
-  }
-
-  @Test
-  public void testBuildExecutionContextProtoWithFaultStep() {
+  public void testBuildExecutionContextProtoWithFaultStep() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge(
+        "faults {"
+            + "  category: STEP"
+            + "  sub_category: \""
+            + FAULT_SUB_CATEGORY
+            + "\""
+            + "  name: \""
+            + FAULT_NAME
+            + "\""
+            + "  reason: \""
+            + FAULT_REASON
+            + "\""
+            + "}",
+        expectedProtoBuilder);
     executionContext.addFault(mockFault);
     doReturn(Fault.Category.Step).when(mockFault).getCategory();
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(1, proto.getFaultsCount());
-    assertEquals(Execute.ExecutionContext.Fault.Category.STEP, proto.getFaults(0).getCategory());
-    assertEquals(FAULT_SUB_CATEGORY, proto.getFaults(0).getSubCategory());
-    assertEquals(FAULT_NAME, proto.getFaults(0).getName());
-    assertEquals(FAULT_REASON, proto.getFaults(0).getReason());
-    assertEquals(0, proto.getFaults(0).getAttributesCount());
-    assertEquals(Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionContextProtoWithFaultTransport() {
+  public void testBuildExecutionContextProtoWithFaultTransport() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge(
+        "faults {"
+            + "  category: TRANSPORT"
+            + "  sub_category: \""
+            + FAULT_SUB_CATEGORY
+            + "\""
+            + "  name: \""
+            + FAULT_NAME
+            + "\""
+            + "  reason: \""
+            + FAULT_REASON
+            + "\""
+            + "}",
+        expectedProtoBuilder);
     executionContext.addFault(mockFault);
     doReturn(Fault.Category.Transport).when(mockFault).getCategory();
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(1, proto.getFaultsCount());
-    assertEquals(
-        Execute.ExecutionContext.Fault.Category.TRANSPORT, proto.getFaults(0).getCategory());
-    assertEquals(FAULT_SUB_CATEGORY, proto.getFaults(0).getSubCategory());
-    assertEquals(FAULT_NAME, proto.getFaults(0).getName());
-    assertEquals(FAULT_REASON, proto.getFaults(0).getReason());
-    assertEquals(0, proto.getFaults(0).getAttributesCount());
-    assertEquals(Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionContextProtoWithFaultSystem() {
+  public void testBuildExecutionContextProtoWithFaultSystem() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge(
+        "faults {"
+            + "  category: SYSTEM"
+            + "  sub_category: \""
+            + FAULT_SUB_CATEGORY
+            + "\""
+            + "  name: \""
+            + FAULT_NAME
+            + "\""
+            + "  reason: \""
+            + FAULT_REASON
+            + "\""
+            + "}",
+        expectedProtoBuilder);
     executionContext.addFault(mockFault);
     doReturn(Fault.Category.System).when(mockFault).getCategory();
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(1, proto.getFaultsCount());
-    assertEquals(Execute.ExecutionContext.Fault.Category.SYSTEM, proto.getFaults(0).getCategory());
-    assertEquals(FAULT_SUB_CATEGORY, proto.getFaults(0).getSubCategory());
-    assertEquals(FAULT_NAME, proto.getFaults(0).getName());
-    assertEquals(FAULT_REASON, proto.getFaults(0).getReason());
-    assertEquals(0, proto.getFaults(0).getAttributesCount());
-    assertEquals(Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   @Test
-  public void testBuildExecutionContextProtoWithFaultWithAttributes() {
+  public void testBuildExecutionContextProtoWithFaultWithAttributes() throws Exception {
+    Execute.ExecutionContext.Builder expectedProtoBuilder = Execute.ExecutionContext.newBuilder();
+    TextFormat.merge(
+        "faults {\n"
+            + "  category: MESSAGING"
+            + "  sub_category: \""
+            + FAULT_SUB_CATEGORY
+            + "\""
+            + "  name: \""
+            + FAULT_NAME
+            + "\""
+            + "  reason: \""
+            + FAULT_REASON
+            + "\""
+            + "  attributes {"
+            + "    key: \""
+            + ATTRIBUTES_KEY1
+            + "\""
+            + "    value: \""
+            + ATTRIBUTES_VALUE1
+            + "\""
+            + "  }"
+            + "  attributes {"
+            + "    key: \""
+            + ATTRIBUTES_KEY2
+            + "\""
+            + "    value: \""
+            + ATTRIBUTES_VALUE2
+            + "\""
+            + "  }"
+            + "}",
+        expectedProtoBuilder);
     executionContext.addFault(mockFault);
     Map<String, Object> attributes = new HashMap<>();
     attributes.put(ATTRIBUTES_KEY1, ATTRIBUTES_VALUE1);
     attributes.put(ATTRIBUTES_KEY2, ATTRIBUTES_VALUE2);
-    doReturn(Fault.Category.Messaging).when(mockFault).getCategory();
     doReturn(attributes).when(mockFault).getAttributes();
-    Execute.ExecutionContext proto =
+    Execute.ExecutionContext actualProto =
         ExecutionContextProtoMessageBuilder.buildExecutionContextProto(executionContext);
 
-    assertEquals(1, proto.getFaultsCount());
-    assertEquals(
-        Execute.ExecutionContext.Fault.Category.MESSAGING, proto.getFaults(0).getCategory());
-    assertEquals(FAULT_SUB_CATEGORY, proto.getFaults(0).getSubCategory());
-    assertEquals(FAULT_NAME, proto.getFaults(0).getName());
-    assertEquals(FAULT_REASON, proto.getFaults(0).getReason());
-    assertEquals(2, proto.getFaults(0).getAttributesCount());
-    assertEquals(
-        attributes.entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, e -> (String) e.getValue())),
-        proto.getFaults(0).getAttributesMap());
-    assertEquals(Execute.ExecutionContext.FlowType.UNKNOWN_FLOW_TYPE, proto.getFlowType());
+    assertEquals(expectedProtoBuilder.build(), actualProto);
   }
 
   abstract static class FakeExecutionContext implements ExecutionContext {
@@ -239,8 +317,8 @@ public class ExecutionContextProtoMessageBuilderTest {
       return requestFlow;
     }
 
-    public void setRequestFlow(boolean val) {
-      requestFlow = val;
+    public void setRequestFlow(boolean requestFlow) {
+      this.requestFlow = requestFlow;
     }
 
     @Override
@@ -248,8 +326,8 @@ public class ExecutionContextProtoMessageBuilderTest {
       return errorFlow;
     }
 
-    public void setErrorFlow(boolean val) {
-      errorFlow = val;
+    public void setErrorFlow(boolean errorFlow) {
+      this.errorFlow = errorFlow;
     }
 
     @Override
@@ -258,9 +336,8 @@ public class ExecutionContextProtoMessageBuilderTest {
     }
 
     @Override
-    public void addFault(Fault var1) {
-
-      faults.add(var1);
+    public void addFault(Fault fault) {
+      faults.add(fault);
     }
 
     public void clearFaults() {
