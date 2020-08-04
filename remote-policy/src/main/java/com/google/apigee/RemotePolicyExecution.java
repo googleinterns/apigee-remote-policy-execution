@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 /**
  * Decodes an Execution Protocol Buffer Message and sets a flow variable before returning to caller.
+ * Designed to be deployed as a Google Cloud Function.
  */
 public class RemotePolicyExecution implements HttpFunction {
 
@@ -36,7 +37,6 @@ public class RemotePolicyExecution implements HttpFunction {
    */
   @Override
   public void service(HttpRequest request, HttpResponse response) throws IOException {
-
     try {
       InputStream is = request.getInputStream();
       byte[] data = is.readAllBytes();

@@ -15,6 +15,7 @@
 package com.google.apigee;
 
 import java.io.IOException;
+import java.net.URI;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
@@ -23,7 +24,18 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 /** Handles the call to a remote HTTP Server and returns the response. */
-public class RemotePolicyExecutionHandler {
+class RemotePolicyExecutionHandler {
+  CloseableHttpClient httpClient;
+  HttpPost httpRequest;
+
+  public RemotePolicyExecutionHandler() {
+    this(HttpClients.createDefault(), new HttpPost());
+  }
+
+  public RemotePolicyExecutionHandler(CloseableHttpClient httpClient, HttpPost httpRequest) {
+    this.httpClient = httpClient;
+    this.httpRequest = httpRequest;
+  }
   /**
    * Sends an HTTP Request to the provided URL with the serialized Execution Protocol Buffer
    * Message. Remote HTTP Server sets a Message flow variable that this function returns.
@@ -35,30 +47,14 @@ public class RemotePolicyExecutionHandler {
    */
   public Execute.Execution sendRemoteHttpServerRequest(
       Execute.Execution executionProtoMessage, String urlString) throws IOException {
-    HttpPost httpRequest = new HttpPost(urlString);
-    try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-      return sendRequest(executionProtoMessage, httpClient, httpRequest);
-    }
-  }
-
-  /**
-   * Executes the HTTP Request with the serialized Execution Protocol Buffer Message. Remote HTTP
-   * Server sets a Message flow variable that this function returns.
-   *
-   * @param executionProtoMessage Execution Protocol Buffer Message to serialize and send.
-   * @param httpClient Client for HTTP request execution.
-   * @param httpRequest Request message sent to server
-   * @return Result of the remote HTTP call
-   * @throws IOException
-   */
-  public Execute.Execution sendRequest(
-      Execute.Execution executionProtoMessage, CloseableHttpClient httpClient, HttpPost httpRequest)
-      throws IOException {
+    httpRequest.setURI(URI.create(urlString));
     httpRequest.setEntity(new ByteArrayEntity(executionProtoMessage.toByteArray()));
     httpRequest.setHeader("content-type", "application/octet-stream");
     try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
       byte[] responseContent = EntityUtils.toByteArray(response.getEntity());
       return Execute.Execution.parseFrom(responseContent);
+    } finally {
+      httpClient.close();
     }
   }
 }

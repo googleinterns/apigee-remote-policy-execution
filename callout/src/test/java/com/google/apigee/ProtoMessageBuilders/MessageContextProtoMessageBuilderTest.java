@@ -153,7 +153,9 @@ public class MessageContextProtoMessageBuilderTest {
   public void testBuildMessageWithContent() throws Exception {
     Execute.MessageContext.Builder expectedProtoBuilder = Execute.MessageContext.newBuilder();
     TextFormat.merge(
-        "target_request_message {" + "    content: \"" + CONTENT + "\"" + "}",
+        "target_request_message {"
+            + "    content: \"" + CONTENT + "\""
+            + "}",
         expectedProtoBuilder);
     message.setContent(CONTENT);
     messageContext.setMessage(FlowContext.TARGET_REQUEST, message);
@@ -213,7 +215,9 @@ public class MessageContextProtoMessageBuilderTest {
     Execute.Message.FlowMapValue.Builder expectedProtoBuilder =
         Execute.Message.FlowMapValue.newBuilder();
     TextFormat.merge(
-        "flow_info {" + "    identifier: \"" + FLOW_INFO_IDENTIFIER + "\"" + "}",
+        "flow_info {"
+            + "    identifier: \"" + FLOW_INFO_IDENTIFIER + "\""
+            + "}",
         expectedProtoBuilder);
 
     Execute.Message.FlowMapValue actualProto =

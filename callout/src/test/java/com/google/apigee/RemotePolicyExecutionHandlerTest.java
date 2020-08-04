@@ -28,7 +28,7 @@ public class RemotePolicyExecutionHandlerTest {
   public void init() {
     MockitoAnnotations.openMocks(this);
 
-    remotePolicyExecutionHandler = new RemotePolicyExecutionHandler();
+    remotePolicyExecutionHandler = new RemotePolicyExecutionHandler(httpClient, httpPost);
   }
 
   @Test
@@ -46,16 +46,16 @@ public class RemotePolicyExecutionHandlerTest {
             + "  }"
             + "}",
         executionBuilder);
+    Execution expected = executionBuilder.build();
 
     doReturn(httpResponse).when(httpClient).execute(httpPost);
-    doReturn(
-            new InputStreamEntity(new ByteArrayInputStream(executionBuilder.build().toByteArray())))
+    doReturn(new InputStreamEntity(new ByteArrayInputStream(expected.toByteArray())))
         .when(httpResponse)
         .getEntity();
 
     Execute.Execution result =
-        remotePolicyExecutionHandler.sendRequest(executionBuilder.build(), httpClient, httpPost);
+        remotePolicyExecutionHandler.sendRemoteHttpServerRequest(expected, "");
 
-    assertEquals(executionBuilder.build(), result);
+    assertEquals(expected, result);
   }
 }
