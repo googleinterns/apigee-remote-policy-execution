@@ -69,7 +69,7 @@ public class JavaCalloutRemotePolicyExecution implements Execution {
       ExecutionResult executionResult =
           remoteExecutionResult.hasExecutionResult()
               ? extractExecutionResult(remoteExecutionResult.getExecutionResult())
-              : ExecutionResult.SUCCESS;
+              : ExecutionResult.ABORT;
       if (executionResult.getAction() == com.apigee.flow.execution.Action.CONTINUE) {
         messageContext
             .getMessage()
@@ -77,6 +77,7 @@ public class JavaCalloutRemotePolicyExecution implements Execution {
       }
       return executionResult;
     } catch (Throwable throwable) {
+      messageContext.setVariable("callout_exception", throwable);
       return ExecutionResult.ABORT;
     }
   }

@@ -2,8 +2,6 @@ package com.google.apigee;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
@@ -25,12 +23,12 @@ import org.mockito.MockitoAnnotations;
 public class JavaCalloutRemotePolicyExecutionTest {
   private static final String KEY = "Example";
   private static final String VALUE = "Value";
-  private static final String URL_PROPERTY_NAME = "urlpropertyname";
+  private static final String URL_PROPERTY_NAME = "remote_execution_url";
   private static final String SERVER_URL = "url";
-  @Mock MessageContext messageContext;
-  @Mock ExecutionContext executionContext;
-  @Mock RemotePolicyExecutionHandler remotePolicyExecutionHandler;
-  @Mock Message message;
+  @Mock private MessageContext messageContext;
+  @Mock private ExecutionContext executionContext;
+  @Mock private RemotePolicyExecutionHandler remotePolicyExecutionHandler;
+  @Mock private Message message;
   private JavaCalloutRemotePolicyExecution callout;
 
   @Before
@@ -49,13 +47,9 @@ public class JavaCalloutRemotePolicyExecutionTest {
         "messageContext {"
             + "  target_request_message {"
             + "    flow_variables {"
-            + "      key: \""
-            + KEY
-            + "\""
+            + "      key: \"" + KEY + "\""
             + "      value {"
-            + "        flow_variable: \""
-            + VALUE
-            + "\""
+            + "        flow_variable: \"" + VALUE + "\""
             + "      }"
             + "    }"
             + "  }"
@@ -68,6 +62,14 @@ public class JavaCalloutRemotePolicyExecutionTest {
         executionBuilder);
     Execution execution = executionBuilder.build();
 
+    Execution.Builder mockExecutionBuilder = Execution.newBuilder();
+    TextFormat.merge(
+        "messageContext {\n"
+            + "}\n"
+            + "executionContext {\n"
+            + "}", mockExecutionBuilder);
+    Execution mockExecution = mockExecutionBuilder.build();
+
     ExecutionResult expected = new ExecutionResult(true, Action.CONTINUE);
     expected.setErrorResponse("");
     expected.setErrorResponseHeaders(new HashMap<>());
@@ -75,9 +77,9 @@ public class JavaCalloutRemotePolicyExecutionTest {
 
     doReturn(execution)
         .when(remotePolicyExecutionHandler)
-        .sendRemoteHttpServerRequest(any(), any());
+        .sendRemoteHttpServerRequest(mockExecution, SERVER_URL);
     doReturn(message).when(messageContext).getMessage();
-    doNothing().when(message).setContent(anyString());
+    doNothing().when(message).setContent(VALUE);
 
     ExecutionResult actual = callout.execute(messageContext, executionContext);
 
@@ -106,6 +108,14 @@ public class JavaCalloutRemotePolicyExecutionTest {
         executionBuilder);
     Execution execution = executionBuilder.build();
 
+    Execution.Builder mockExecutionBuilder = Execution.newBuilder();
+    TextFormat.merge(
+        "messageContext {\n"
+            + "}\n"
+            + "executionContext {\n"
+            + "}", mockExecutionBuilder);
+    Execution mockExecution = mockExecutionBuilder.build();
+
     ExecutionResult expected = new ExecutionResult(true, Action.PAUSE);
     expected.setErrorResponse("");
     expected.setErrorResponseHeaders(new HashMap<>());
@@ -113,9 +123,9 @@ public class JavaCalloutRemotePolicyExecutionTest {
 
     doReturn(execution)
         .when(remotePolicyExecutionHandler)
-        .sendRemoteHttpServerRequest(any(), any());
+        .sendRemoteHttpServerRequest(mockExecution, SERVER_URL);
     doReturn(message).when(messageContext).getMessage();
-    doNothing().when(message).setContent(anyString());
+    doNothing().when(message).setContent(VALUE);
 
     ExecutionResult actual = callout.execute(messageContext, executionContext);
 
@@ -144,6 +154,14 @@ public class JavaCalloutRemotePolicyExecutionTest {
         executionBuilder);
     Execution execution = executionBuilder.build();
 
+    Execution.Builder mockExecutionBuilder = Execution.newBuilder();
+    TextFormat.merge(
+        "messageContext {\n"
+            + "}\n"
+            + "executionContext {\n"
+            + "}", mockExecutionBuilder);
+    Execution mockExecution = mockExecutionBuilder.build();
+
     ExecutionResult expected = new ExecutionResult(true, Action.ABORT);
     expected.setErrorResponse("");
     expected.setErrorResponseHeaders(new HashMap<>());
@@ -151,9 +169,9 @@ public class JavaCalloutRemotePolicyExecutionTest {
 
     doReturn(execution)
         .when(remotePolicyExecutionHandler)
-        .sendRemoteHttpServerRequest(any(), any());
+        .sendRemoteHttpServerRequest(mockExecution, SERVER_URL);
     doReturn(message).when(messageContext).getMessage();
-    doNothing().when(message).setContent(anyString());
+    doNothing().when(message).setContent(VALUE);
 
     ExecutionResult actual = callout.execute(messageContext, executionContext);
 
@@ -179,13 +197,21 @@ public class JavaCalloutRemotePolicyExecutionTest {
         executionBuilder);
     Execution execution = executionBuilder.build();
 
-    ExecutionResult expected = ExecutionResult.SUCCESS;
+    Execution.Builder mockExecutionBuilder = Execution.newBuilder();
+    TextFormat.merge(
+        "messageContext {\n"
+            + "}\n"
+            + "executionContext {\n"
+            + "}", mockExecutionBuilder);
+    Execution mockExecution = mockExecutionBuilder.build();
+
+    ExecutionResult expected = ExecutionResult.ABORT;
 
     doReturn(execution)
         .when(remotePolicyExecutionHandler)
-        .sendRemoteHttpServerRequest(any(), any());
+        .sendRemoteHttpServerRequest(mockExecution, SERVER_URL);
     doReturn(message).when(messageContext).getMessage();
-    doNothing().when(message).setContent(anyString());
+    doNothing().when(message).setContent(VALUE);
 
     ExecutionResult actual = callout.execute(messageContext, executionContext);
 
