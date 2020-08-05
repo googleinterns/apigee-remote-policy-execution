@@ -29,8 +29,8 @@ import java.util.Properties;
  */
 public class JavaCalloutRemotePolicyExecution implements Execution {
 
-  private final String FLOW_VARIABLE_KEY = "Example";
-  private final String REMOTE_SERVER_URL_PROPERTY_NAME = "remote_execution_url";
+  private static final String FLOW_VARIABLE_KEY = "Example";
+  private static final String REMOTE_SERVER_URL_PROPERTY_NAME = "remote_execution_url";
   private final RemotePolicyExecutionHandler remotePolicyExecutionHandler;
   private Map<String, String> properties;
 
@@ -77,7 +77,8 @@ public class JavaCalloutRemotePolicyExecution implements Execution {
       }
       return executionResult;
     } catch (Throwable throwable) {
-      messageContext.setVariable("callout_exception", throwable);
+      // TODO: call CalloutBase.setExceptionVariable here to log the throwable when BaseClass can be
+      //   imported through maven
       return ExecutionResult.ABORT;
     }
   }

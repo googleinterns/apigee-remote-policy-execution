@@ -25,8 +25,8 @@ import org.apache.http.util.EntityUtils;
 
 /** Handles the call to a remote HTTP Server and returns the response. */
 class RemotePolicyExecutionHandler {
-  CloseableHttpClient httpClient;
-  HttpPost httpRequest;
+  private CloseableHttpClient httpClient;
+  private HttpPost httpRequest;
 
   public RemotePolicyExecutionHandler() {
     this(HttpClients.createDefault(), new HttpPost());

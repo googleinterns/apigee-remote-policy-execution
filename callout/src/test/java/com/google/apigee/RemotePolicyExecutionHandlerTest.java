@@ -37,6 +37,15 @@ public class RemotePolicyExecutionHandlerTest {
     TextFormat.merge(
         "messageContext {"
             + "  target_request_message {"
+            + "  }"
+            + "}",
+        executionBuilder);
+    Execution execution = executionBuilder.build();
+
+    Execution.Builder expectedBuilder = Execution.newBuilder();
+    TextFormat.merge(
+        "messageContext {"
+            + "  target_request_message {"
             + "    flow_variables {"
             + "      key: \"" + KEY + "\""
             + "      value {"
@@ -46,7 +55,7 @@ public class RemotePolicyExecutionHandlerTest {
             + "  }"
             + "}",
         executionBuilder);
-    Execution expected = executionBuilder.build();
+    Execution expected = expectedBuilder.build();
 
     doReturn(httpResponse).when(httpClient).execute(httpPost);
     doReturn(new InputStreamEntity(new ByteArrayInputStream(expected.toByteArray())))
@@ -54,7 +63,7 @@ public class RemotePolicyExecutionHandlerTest {
         .getEntity();
 
     Execute.Execution result =
-        remotePolicyExecutionHandler.sendRemoteHttpServerRequest(expected, "");
+        remotePolicyExecutionHandler.sendRemoteHttpServerRequest(execution, "");
 
     assertEquals(expected, result);
   }

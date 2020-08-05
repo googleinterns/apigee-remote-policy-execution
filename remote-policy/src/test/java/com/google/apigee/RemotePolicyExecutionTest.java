@@ -2,6 +2,7 @@ package com.google.apigee;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 import com.google.apigee.Execute.Execution;
 import com.google.cloud.functions.HttpRequest;
@@ -9,6 +10,7 @@ import com.google.cloud.functions.HttpResponse;
 import com.google.protobuf.TextFormat;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -65,6 +67,24 @@ public class RemotePolicyExecutionTest {
             + "}"
             + "executionResult {"
             + "    action: CONTINUE"
+            + "}",
+        expectedBuilder);
+
+    assertEquals(
+        expectedBuilder.build(),
+        Execution.parseFrom(byteArrayOutputStream.toByteArray()).toBuilder().build());
+  }
+
+  @Test
+  public void testServiceException() throws Exception {
+    doThrow(new IOException()).when(httpRequest).getInputStream();
+    remotePolicyExecution.service(httpRequest, httpResponse);
+
+    Execution.Builder expectedBuilder = Execution.newBuilder();
+    TextFormat.merge(
+        "executionResult {"
+            + "    action: ABORT"
+            + "    error_response: \"java.io.IOException\""
             + "}",
         expectedBuilder);
 

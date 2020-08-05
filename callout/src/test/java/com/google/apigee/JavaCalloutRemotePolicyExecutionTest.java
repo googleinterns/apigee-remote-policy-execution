@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import com.apigee.flow.execution.Action;
 import com.apigee.flow.execution.ExecutionContext;
@@ -41,7 +42,7 @@ public class JavaCalloutRemotePolicyExecutionTest {
   }
 
   @Test
-  public void testExecution() throws Exception {
+  public void testExecutionContinue() throws Exception {
     Execution.Builder executionBuilder = Execution.newBuilder();
     TextFormat.merge(
         "messageContext {"
@@ -82,6 +83,8 @@ public class JavaCalloutRemotePolicyExecutionTest {
     doNothing().when(message).setContent(VALUE);
 
     ExecutionResult actual = callout.execute(messageContext, executionContext);
+
+    verify(message).setContent(VALUE);
 
     assertTrue(isSameExecutionResult(expected, actual));
   }
