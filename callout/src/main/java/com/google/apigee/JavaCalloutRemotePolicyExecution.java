@@ -26,6 +26,8 @@ import java.util.Properties;
 
 /**
  * Java Callout demonstrating execution of a Java Callout or Apigee Policy on remote HTTP Server.
+ * This callout specifically expects the remote server to set a flow variable and extracts that
+ * value.
  */
 public class JavaCalloutRemotePolicyExecution implements Execution {
 

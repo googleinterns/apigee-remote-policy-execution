@@ -128,7 +128,6 @@ public class JavaCalloutRemotePolicyExecutionTest {
         .when(remotePolicyExecutionHandler)
         .sendRemoteHttpServerRequest(mockExecution, SERVER_URL);
     doReturn(message).when(messageContext).getMessage();
-    doNothing().when(message).setContent(VALUE);
 
     ExecutionResult actual = callout.execute(messageContext, executionContext);
 
@@ -174,7 +173,6 @@ public class JavaCalloutRemotePolicyExecutionTest {
         .when(remotePolicyExecutionHandler)
         .sendRemoteHttpServerRequest(mockExecution, SERVER_URL);
     doReturn(message).when(messageContext).getMessage();
-    doNothing().when(message).setContent(VALUE);
 
     ExecutionResult actual = callout.execute(messageContext, executionContext);
 
@@ -214,7 +212,6 @@ public class JavaCalloutRemotePolicyExecutionTest {
         .when(remotePolicyExecutionHandler)
         .sendRemoteHttpServerRequest(mockExecution, SERVER_URL);
     doReturn(message).when(messageContext).getMessage();
-    doNothing().when(message).setContent(VALUE);
 
     ExecutionResult actual = callout.execute(messageContext, executionContext);
 
