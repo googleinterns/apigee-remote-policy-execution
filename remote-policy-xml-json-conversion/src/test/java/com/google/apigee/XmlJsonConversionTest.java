@@ -23,7 +23,7 @@ public class XmlJsonConversionTest {
   private static final String CONVERSION_KEY = "conversion";
   private static final String CONVERSION_VALUE_JSON_TO_XML = "jsontoxml";
   private static final String CONVERSION_VALUE_XML_TO_JSON = "xmltojson";
-  private XmlJsonConversion XMLJsonConversion;
+  private XmlJsonConversion xmlJsonConversion;
   @Mock private HttpRequest httpRequest;
   @Mock private HttpResponse httpResponse;
   @Mock private ByteArrayInputStream inputStream;
@@ -33,7 +33,7 @@ public class XmlJsonConversionTest {
   public void init() throws Exception {
     MockitoAnnotations.openMocks(this);
 
-    XMLJsonConversion = new XmlJsonConversion();
+    xmlJsonConversion = new XmlJsonConversion();
     doReturn(inputStream).when(httpRequest).getInputStream();
     byteArrayOutputStream = new ByteArrayOutputStream();
     doReturn(byteArrayOutputStream).when(httpResponse).getOutputStream();
@@ -59,7 +59,7 @@ public class XmlJsonConversionTest {
         executionBuilder);
 
     doReturn(executionBuilder.build().toByteArray()).when(inputStream).readAllBytes();
-    XMLJsonConversion.service(httpRequest, httpResponse);
+    xmlJsonConversion.service(httpRequest, httpResponse);
 
     Execution.Builder expectedBuilder = Execution.newBuilder();
     TextFormat.merge(
@@ -106,7 +106,7 @@ public class XmlJsonConversionTest {
         executionBuilder);
 
     doReturn(executionBuilder.build().toByteArray()).when(inputStream).readAllBytes();
-    XMLJsonConversion.service(httpRequest, httpResponse);
+    xmlJsonConversion.service(httpRequest, httpResponse);
 
     Execution.Builder expectedBuilder = Execution.newBuilder();
     TextFormat.merge(
@@ -142,7 +142,7 @@ public class XmlJsonConversionTest {
         executionBuilder);
 
     doReturn(executionBuilder.build().toByteArray()).when(inputStream).readAllBytes();
-    XMLJsonConversion.service(httpRequest, httpResponse);
+    xmlJsonConversion.service(httpRequest, httpResponse);
 
     Execution.Builder expectedBuilder = Execution.newBuilder();
     TextFormat.merge(
@@ -168,7 +168,7 @@ public class XmlJsonConversionTest {
         executionBuilder);
 
     doReturn(executionBuilder.build().toByteArray()).when(inputStream).readAllBytes();
-    XMLJsonConversion.service(httpRequest, httpResponse);
+    xmlJsonConversion.service(httpRequest, httpResponse);
 
     Execution.Builder expectedBuilder = Execution.newBuilder();
     TextFormat.merge(
@@ -203,13 +203,13 @@ public class XmlJsonConversionTest {
         executionBuilder);
 
     doReturn(executionBuilder.build().toByteArray()).when(inputStream).readAllBytes();
-    XMLJsonConversion.service(httpRequest, httpResponse);
+    xmlJsonConversion.service(httpRequest, httpResponse);
 
     Execution.Builder expectedBuilder = Execution.newBuilder();
     TextFormat.merge(
         "executionResult {\n"
             + "  action: ABORT\n"
-            + "  error_response: \"java.lang.IllegalArgumentException: invalid conversion variable\"\n"
+            + "  error_response: \"java.lang.IllegalArgumentException: invalid conversion value: invalid\"\n"
             + "}",
         expectedBuilder);
 
@@ -238,7 +238,7 @@ public class XmlJsonConversionTest {
         executionBuilder);
 
     doReturn(executionBuilder.build().toByteArray()).when(inputStream).readAllBytes();
-    XMLJsonConversion.service(httpRequest, httpResponse);
+    xmlJsonConversion.service(httpRequest, httpResponse);
 
     Execution.Builder expectedBuilder = Execution.newBuilder();
     TextFormat.merge(
@@ -273,7 +273,7 @@ public class XmlJsonConversionTest {
         executionBuilder);
 
     doReturn(executionBuilder.build().toByteArray()).when(inputStream).readAllBytes();
-    XMLJsonConversion.service(httpRequest, httpResponse);
+    xmlJsonConversion.service(httpRequest, httpResponse);
 
     Execution.Builder expectedBuilder = Execution.newBuilder();
     TextFormat.merge(
@@ -291,7 +291,7 @@ public class XmlJsonConversionTest {
   @Test
   public void testServiceException() throws Exception {
     doThrow(new IOException()).when(httpRequest).getInputStream();
-    XMLJsonConversion.service(httpRequest, httpResponse);
+    xmlJsonConversion.service(httpRequest, httpResponse);
 
     Execution.Builder expectedBuilder = Execution.newBuilder();
     TextFormat.merge(

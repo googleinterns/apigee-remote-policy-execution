@@ -82,7 +82,7 @@ public class XmlJsonConversion implements HttpFunction {
     } else if (JSON_TO_XML.equals(conversion)) {
       execution = jsonToXml(execution, content);
     } else {
-      throw new IllegalArgumentException("invalid conversion variable");
+      throw new IllegalArgumentException("invalid conversion value: " + conversion);
     }
     return execution;
   }
