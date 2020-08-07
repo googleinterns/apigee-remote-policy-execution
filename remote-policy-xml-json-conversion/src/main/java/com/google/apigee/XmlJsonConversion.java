@@ -76,11 +76,13 @@ public class XmlJsonConversion implements HttpFunction {
     String conversion = execution.getMessageContext().getTargetRequestMessage()
         .getFlowVariablesMap().get(CONVERSION_FLOW_VARIABLE).getFlowVariable();
     String content = execution.getMessageContext().getTargetRequestMessage().getContent()
-        .toString("UTF-8");
+        .toStringUtf8();
     if (XML_TO_JSON.equals(conversion)) {
       execution = xmlToJson(execution, content);
     } else if (JSON_TO_XML.equals(conversion)) {
       execution = jsonToXml(execution, content);
+    } else {
+      throw new IllegalArgumentException("invalid conversion variable");
     }
     return execution;
   }

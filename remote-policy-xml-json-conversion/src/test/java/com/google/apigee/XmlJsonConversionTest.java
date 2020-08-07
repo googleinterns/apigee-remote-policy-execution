@@ -207,21 +207,9 @@ public class XmlJsonConversionTest {
 
     Execution.Builder expectedBuilder = Execution.newBuilder();
     TextFormat.merge(
-        "messageContext {"
-            + "  target_request_message {"
-            + "    content: \"" + CONTENT_JSON + "\""
-            + "   flow_variables {"
-            + "      key: \"" + CONVERSION_KEY + "\""
-            + "      value {"
-            + "        flow_variable: \"" + "invalid" + "\""
-            + "      }"
-            + "    }"
-            + "  }"
-            + "}"
-            + "executionContext {"
-            + "}"
-            + "executionResult {"
-            + "    action: CONTINUE"
+        "executionResult {\n"
+            + "  action: ABORT\n"
+            + "  error_response: \"java.lang.IllegalArgumentException: invalid conversion variable\"\n"
             + "}",
         expectedBuilder);
 
