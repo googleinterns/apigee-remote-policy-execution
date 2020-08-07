@@ -95,7 +95,7 @@ public class XmlJsonConversion implements HttpFunction {
       throws Exception {
     Execute.Execution.Builder executionBuilder = execution.toBuilder();
     JSONObject jsonObject = XML.toJSONObject(content);
-    executionBuilder.getMessageContext().getTargetRequestMessage().toBuilder()
+    executionBuilder.getMessageContextBuilder().getTargetRequestMessageBuilder()
         .setContent(ByteString.copyFrom(jsonObject.toString(), "UTF-8"));
     return executionBuilder.build();
   }
@@ -113,7 +113,7 @@ public class XmlJsonConversion implements HttpFunction {
     Execute.Execution.Builder executionBuilder = execution.toBuilder();
     JSONObject jsonObject = new JSONObject(content);
     String xml = XML.toString(jsonObject);
-    executionBuilder.getMessageContext().getTargetRequestMessage().toBuilder()
+    executionBuilder.getMessageContextBuilder().getTargetRequestMessageBuilder()
         .setContent(ByteString.copyFrom(xml, "UTF-8"));
     return executionBuilder.build();
   }
