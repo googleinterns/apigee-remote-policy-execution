@@ -1,7 +1,7 @@
 # Apigee Remote Policy Execution 
 The purpose of this project is to provide a proof of concept and protocol for
 running Apigee policies on remote HTTP servers. The `execute.proto` file in
-`callout/proto` defines a protocol buffer schema for encoding the information
+`proto` defines a protocol buffer schema for encoding the information
 required by Apigee policies. 
 
 The Java callout in `callout` encodes and serializes the Execution interface and
