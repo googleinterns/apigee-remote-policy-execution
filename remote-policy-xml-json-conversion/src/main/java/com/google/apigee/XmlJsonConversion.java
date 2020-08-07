@@ -22,6 +22,7 @@ import com.google.cloud.functions.HttpResponse;
 import com.google.protobuf.ByteString;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -69,7 +70,8 @@ public class XmlJsonConversion implements HttpFunction {
    * @return Execute.Execution object with converted content inside Target Request Message.
    * @throws Exception
    */
-  private Execute.Execution convert(Execute.Execution execution) throws Exception {
+  private Execute.Execution convert(Execute.Execution execution)
+      throws UnsupportedEncodingException {
     validateExecution(execution);
     String conversion = execution.getMessageContext().getTargetRequestMessage()
         .getFlowVariablesMap().get(CONVERSION_FLOW_VARIABLE).getFlowVariable();
@@ -89,10 +91,10 @@ public class XmlJsonConversion implements HttpFunction {
    * @param execution Execute.Execution object to write to.
    * @param content   String content to convert.
    * @return Execute.Execution object with converted content.
-   * @throws Exception
+   * @throws UnsupportedEncodingException
    */
   private Execute.Execution xmlToJson(Execute.Execution execution, String content)
-      throws Exception {
+      throws UnsupportedEncodingException {
     Execute.Execution.Builder executionBuilder = execution.toBuilder();
     JSONObject jsonObject = XML.toJSONObject(content);
     executionBuilder.getMessageContextBuilder().getTargetRequestMessageBuilder()
@@ -106,10 +108,10 @@ public class XmlJsonConversion implements HttpFunction {
    * @param execution Execute.Execution object to write to.
    * @param content   String content to convert.
    * @return Execute.Execution object with converted content.
-   * @throws Exception
+   * @throws UnsupportedEncodingException
    */
   private Execute.Execution jsonToXml(Execute.Execution execution, String content)
-      throws Exception {
+      throws UnsupportedEncodingException {
     Execute.Execution.Builder executionBuilder = execution.toBuilder();
     JSONObject jsonObject = new JSONObject(content);
     String xml = XML.toString(jsonObject);
